@@ -15,9 +15,7 @@ type InvalidInput = {
 
 type ControlledInput = ValidInput | InvalidInput;
 
-type FormState = {
-  [entryId: string]: ControlledInput;
-};
+type FormState = Record<string, ControlledInput | undefined>;
 
 const FormContext = React.createContext<
   { state: FormState; dispatch: React.Dispatch<FormAction> } | undefined
@@ -106,7 +104,18 @@ const useDecimalValidation = (entryId: string) => {
     }
   };
 
-  return { value: state[entryId]?.value ?? "", onChange };
+  const entry = state[entryId];
+
+  // TODO this block sucks. Rethink
+  if (entry?.state === "valid") {
+    return { value: entry?.value ?? "", onChange };
+  } else {
+    return {
+      value: entry?.value ?? "",
+      onChange,
+      errorMessage: entry?.errorMessage,
+    };
+  }
 };
 
 const DecimalInput = (
@@ -115,23 +124,26 @@ const DecimalInput = (
     "type" | "inputMode" | "pattern" | "spellCheck" | "onChange" | "value"
   > & { entryId: string }
 ) => {
-  const { value, onChange } = useDecimalValidation(props.entryId);
+  const { value, onChange, errorMessage } = useDecimalValidation(props.entryId);
 
   return (
-    <input
-      type="text"
-      spellCheck={false}
-      value={value}
-      onChange={onChange}
-      {...props}
-    ></input>
+    <>
+      {!!errorMessage && <span>{errorMessage}</span>}
+      <input
+        type="text"
+        spellCheck={false}
+        value={value}
+        onChange={onChange}
+        {...props}
+      ></input>
+    </>
   );
 };
 
 const isFormValid = (
   state: FormState
 ): state is { [entryId: string]: ValidInput } => {
-  return Object.values(state).every((value) => value.state === "valid");
+  return Object.values(state).every((value) => value?.state === "valid");
 };
 
 type Kilograms = number;
@@ -165,8 +177,8 @@ export const WeightForm = ({
   return (
     <FormContext.Provider value={{ state, dispatch }}>
       <form onSubmit={onSubmit}>
-        <DecimalInput entryId="weight" />
-        <DecimalInput entryId="bodyFat" />
+        <DecimalInput entryId="weight" placeholder="Weight (kg)" />
+        <DecimalInput entryId="bodyFat" placeholder="Body fat (%)" />
         <input type="submit"></input>
       </form>
     </FormContext.Provider>
