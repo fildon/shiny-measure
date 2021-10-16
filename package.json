@@ -8,7 +8,7 @@
     "build:static": "cp -RT static ./dist",
     "build": "npm run build:js && npm run build:static",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "dev": "serve dist"
+    "serve": "serve dist"
   },
   "repository": {
     "type": "git",

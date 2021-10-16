@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
+    "lib": ["ES2021", "DOM"],
     "target": "ES2015",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react"
+    "jsx": "react",
+    "typeRoots": ["types/"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
