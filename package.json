@@ -6,7 +6,9 @@
     "prebuild": "rm -rf dist",
     "build:js": "esbuild src/index.tsx --bundle --minify --outfile=dist/index.js",
     "build:static": "cp -RT static ./dist",
-    "build": "npm run build:js && npm run build:static"
+    "build": "npm run build:js && npm run build:static",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "dev": "serve dist"
   },
   "repository": {
     "type": "git",
@@ -19,11 +21,21 @@
   },
   "homepage": "https://github.com/fildon/shiny-measure#readme",
   "devDependencies": {
+    "@types/luxon": "^2.0.5",
     "@types/react": "^17.0.27",
+    "@types/react-dom": "^17.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
     "esbuild": "^0.13.3",
+    "esbuild-plugin-sass": "^0.6.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "govuk-frontend": "^3.14.0",
+    "luxon": "^2.0.2",
     "react": "^17.0.2",
-    "react-charts": "^3.0.0-beta.33",
     "react-dom": "^17.0.2",
-    "typescript": "^4.4.3"
+    "sass": "^1.43.2",
+    "serve": "^12.0.1",
+    "typescript": "^4.4.4"
   }
 }
