@@ -2,7 +2,7 @@ import * as React from "react";
 import { render } from "react-dom";
 
 import { WeightForm } from "./weightform";
-import type { WeightEntry } from "./weightform";
+import type { WeightEntry } from "./types";
 
 const App = () => {
   const [entries, setEntries] = React.useState<WeightEntry[]>([]);

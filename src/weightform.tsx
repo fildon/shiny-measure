@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DateTime } from "luxon";
+import type { WeightEntry } from "./types";
 
 type ValidInput = {
   state: "valid";
@@ -145,15 +146,6 @@ const isFormValid = (
 ): state is { [entryId: string]: ValidInput } => {
   return Object.values(state).every((value) => value?.state === "valid");
 };
-
-type Kilograms = number;
-type Percentage = number;
-
-export interface WeightEntry {
-  dateTime: DateTime;
-  weight: Kilograms;
-  bodyFat: Percentage;
-}
 
 export const WeightForm = ({
   recordWeightEntry,

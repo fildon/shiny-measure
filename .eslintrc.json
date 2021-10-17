@@ -3,13 +3,19 @@
   "parserOptions": { "project": "./tsconfig.json"},
   "plugins": [
     "@typescript-eslint",
+    "jest",
     "jsx-a11y"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:jest/recommended",
+    "plugin:jest/style",
     "plugin:jsx-a11y/recommended"
   ],
-  "ignorePatterns": ["dist/", "node_modules/"]
+  "ignorePatterns": ["dist/", "node_modules/"],
+  "env": {
+    "jest/globals": true
+  }
 }
