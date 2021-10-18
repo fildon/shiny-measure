@@ -10,7 +10,6 @@ jobs:
   test:
     name: Build and Test
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v2
