@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DateTime } from "luxon";
+
 import type { WeightEntry } from "./types";
 
 type ValidInput = {
@@ -11,140 +12,41 @@ type ValidInput = {
 type InvalidInput = {
   state: "invalid";
   value: string;
-  errorMessage?: string;
+  errorMessages: string[];
 };
 
 type ControlledInput = ValidInput | InvalidInput;
 
-type FormState = Record<string, ControlledInput | undefined>;
+type Validator = (unparsedNumber: string) => number | string[];
 
-const FormContext = React.createContext<
-  { state: FormState; dispatch: React.Dispatch<FormAction> } | undefined
->(undefined);
+const useControlledInput = (validator: Validator) => {
+  const [state, setState] = React.useState<ControlledInput>({
+    state: "invalid",
+    value: "",
+    errorMessages: [],
+  });
+  const onChange = ({ target: { value } }: { target: { value: string } }) => {
+    const validationResult = validator(value);
 
-type FormAction =
-  | { type: "entryEmpty"; entryId: string }
-  | {
-      type: "entryValidChange";
-      entryId: string;
-      value: string;
-      parsedValue: number;
-    }
-  | {
-      type: "entryInvalidChange";
-      entryId: string;
-      value: string;
-      errorMessage: string;
-    };
-
-const formReducer = (state: FormState, action: FormAction): FormState => {
-  switch (action.type) {
-    case "entryValidChange": {
-      return {
-        ...state,
-        [action.entryId]: {
-          state: "valid",
-          value: action.value,
-          parsedValue: action.parsedValue,
-        },
-      };
-    }
-    case "entryInvalidChange": {
-      return {
-        ...state,
-        [action.entryId]: {
-          state: "invalid",
-          value: action.value,
-          errorMessage: action.errorMessage,
-        },
-      };
-    }
-    case "entryEmpty": {
-      return {
-        ...state,
-        [action.entryId]: {
-          state: "invalid",
-          value: "",
-        },
-      };
-    }
-  }
-};
-
-const useFormState = () => {
-  const context = React.useContext(FormContext);
-  if (context === undefined) {
-    throw new Error("useFormState must be used within a FormProvider");
-  }
-  return context;
-};
-
-const useDecimalValidation = (entryId: string) => {
-  const { state, dispatch } = useFormState();
-
-  React.useEffect(() => {
-    dispatch({ type: "entryEmpty", entryId });
-  }, []);
-
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const numericValue = Number(event.target.value);
-    if (isNaN(numericValue)) {
-      dispatch({
-        type: "entryInvalidChange",
-        entryId,
-        value: event.target.value,
-        errorMessage: "Value must be numeric with at most two decimal places",
+    if (typeof validationResult === "number") {
+      setState({
+        state: "valid",
+        value,
+        parsedValue: validationResult,
       });
     } else {
-      dispatch({
-        type: "entryValidChange",
-        entryId,
-        value: event.target.value,
-        parsedValue: numericValue,
+      setState({
+        state: "invalid",
+        value,
+        errorMessages: validationResult,
       });
     }
   };
 
-  const entry = state[entryId];
-
-  // TODO this block sucks. Rethink
-  if (entry?.state === "valid") {
-    return { value: entry?.value ?? "", onChange };
-  } else {
-    return {
-      value: entry?.value ?? "",
-      onChange,
-      errorMessage: entry?.errorMessage,
-    };
-  }
-};
-
-const DecimalInput = (
-  props: Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "type" | "inputMode" | "pattern" | "spellCheck" | "onChange" | "value"
-  > & { entryId: string }
-) => {
-  const { value, onChange, errorMessage } = useDecimalValidation(props.entryId);
-
-  return (
-    <>
-      {!!errorMessage && <span>{errorMessage}</span>}
-      <input
-        type="text"
-        spellCheck={false}
-        value={value}
-        onChange={onChange}
-        {...props}
-      ></input>
-    </>
-  );
-};
-
-const isFormValid = (
-  state: FormState
-): state is { [entryId: string]: ValidInput } => {
-  return Object.values(state).every((value) => value?.state === "valid");
+  return {
+    state,
+    onChange,
+  };
 };
 
 export const WeightForm = ({
@@ -152,27 +54,65 @@ export const WeightForm = ({
 }: {
   recordWeightEntry: (newWeightEntry: WeightEntry) => unknown;
 }) => {
-  const [state, dispatch] = React.useReducer(formReducer, {});
+  const { state: weightState, onChange: onChangeWeight } = useControlledInput(
+    (value) => {
+      if (value.length === 0) return ["Value required"];
+      const numericValue = Number(value);
+      if (isNaN(numericValue)) return ["Must be a number"];
+      if (numericValue <= 0) return ["Must be greater than zero"];
+      return numericValue;
+    }
+  );
+  const { state: bodyFatState, onChange: onChangeBodyFat } = useControlledInput(
+    (value) => {
+      if (value.length === 0) return ["Value required"];
+      const numericValue = Number(value);
+      if (isNaN(numericValue)) return ["Must be a number"];
+      if (numericValue <= 0) return ["Must be greater than zero"];
+      if (numericValue > 100) return ["Must be less than 100"];
+      return numericValue;
+    }
+  );
 
-  // TODO derive input elements from input
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    if (isFormValid(state)) {
+    if (weightState.state === "valid" && bodyFatState.state === "valid") {
       recordWeightEntry({
         dateTime: DateTime.now(),
-        weight: state["weight"].parsedValue,
-        bodyFat: state["bodyFat"].parsedValue,
+        weight: weightState.parsedValue,
+        bodyFat: bodyFatState.parsedValue,
       });
     }
   };
 
+  // TODO inputs should have standalone labels
   return (
-    <FormContext.Provider value={{ state, dispatch }}>
-      <form onSubmit={onSubmit}>
-        <DecimalInput entryId="weight" placeholder="Weight (kg)" />
-        <DecimalInput entryId="bodyFat" placeholder="Body fat (%)" />
-        <input type="submit"></input>
-      </form>
-    </FormContext.Provider>
+    <form onSubmit={onSubmit}>
+      {weightState.state === "invalid" && (
+        <span>{weightState.errorMessages}</span>
+      )}
+      <label htmlFor="weight">Weight (kg)</label>
+      <input
+        id="weight"
+        type="text"
+        spellCheck={false}
+        value={weightState.value}
+        onChange={onChangeWeight}
+        enterKeyHint="next"
+      ></input>
+      {bodyFatState.state === "invalid" && (
+        <span>{bodyFatState.errorMessages}</span>
+      )}
+      <label htmlFor="bodyFat">Body Fat (%)</label>
+      <input
+        id="bodyFat"
+        type="text"
+        spellCheck={false}
+        value={bodyFatState.value}
+        onChange={onChangeBodyFat}
+        enterKeyHint="done"
+      ></input>
+      <input type="submit"></input>
+    </form>
   );
 };
