@@ -30,7 +30,7 @@ jobs:
             ${{ runner.OS }}-
 
       - name: 📥 Install deps
-        uses: npm ci
+        run: npm ci
 
       - name: 🚧 npm build
         run: npm run build
