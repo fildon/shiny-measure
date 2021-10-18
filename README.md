@@ -1,6 +1,7 @@
 # Shiny Measure
 
 [![Build](https://github.com/fildon/shiny-measure/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/fildon/shiny-measure/actions/workflows/deploy.yml)
+[![Test](https://github.com/fildon/shiny-measure/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/fildon/shiny-measure/actions/workflows/test.yml)
 
 My personal fitness app. Hosted at [Shiny Measure](fildon.me/shiny-measure).
 
