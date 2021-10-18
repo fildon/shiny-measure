@@ -85,7 +85,6 @@ export const WeightForm = ({
     }
   };
 
-  // TODO inputs should have standalone labels
   return (
     <form onSubmit={onSubmit}>
       {weightState.state === "invalid" && (

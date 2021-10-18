@@ -36,13 +36,19 @@ const App = () => {
           </tr>
         </thead>
         <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.dateTime.toMillis()}>
-              <td>{entry.dateTime.toFormat("d LLL")}</td>
-              <td>{entry.weight}</td>
-              <td>{entry.bodyFat}</td>
+          {entries.length > 0 ? (
+            entries.map((entry) => (
+              <tr key={entry.dateTime.toMillis()}>
+                <td>{entry.dateTime.toFormat("d LLL")}</td>
+                <td>{entry.weight}</td>
+                <td>{entry.bodyFat}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={3}>No data recorded yet!</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </>

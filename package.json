@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "A weight tracking webapp",
   "scripts": {
-    "prebuild": "rm -rf dist",
-    "build:js": "esbuild src/index.tsx --bundle --minify --outfile=dist/index.js",
-    "build:js:dev": "esbuild src/index.tsx --bundle --sourcemap --outfile=dist/index.js",
+    "clean": "rm -rf dist",
+    "build:js": "npm run clean && esbuild src/index.tsx --bundle --minify --outfile=dist/index.js",
+    "build:js:dev": "npm run clean && esbuild src/index.tsx --bundle --sourcemap --outfile=dist/index.js",
     "build:static": "cp -RT static ./dist",
     "build": "npm run build:js && npm run build:static",
     "build:dev": "npm run build:js:dev && npm run build:static",

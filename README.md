@@ -1,8 +1,10 @@
 # Shiny Measure
 
-[![Build](https://github.com/fildon/shiny-measure/actions/workflows/deploy.yml/badge.svg)](https://github.com/fildon/shiny-measure/actions/workflows/deploy.yml)
+[![Build](https://github.com/fildon/shiny-measure/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/fildon/shiny-measure/actions/workflows/deploy.yml)
 
 My personal fitness app. Hosted at [Shiny Measure](fildon.me/shiny-measure).
+
+All data is only held in localStorage.
 
 ## Developer Guidance
 

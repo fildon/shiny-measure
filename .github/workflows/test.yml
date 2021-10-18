@@ -1,14 +1,14 @@
-name: Build
+name: Test
 on:
-  push:
+  pull_request:
     branches: [main]
 
 env:
   NODE_VERSION: "16.x"
 
 jobs:
-  build:
-    name: Build and Deploy
+  test:
+    name: Build and Test
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -35,8 +35,5 @@ jobs:
       - name: 🚧 npm build
         run: npm run build
 
-      - name: 🚀 Deploy to gh-pages
-        uses: JamesIves/github-pages-deploy-action@4.1.3
-        with:
-          branch: gh-pages
-          folder: dist
+      - name: 🧪 npm test
+        run: npm run test
