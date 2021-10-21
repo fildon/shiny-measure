@@ -21,36 +21,40 @@ const App = () => {
 
   return (
     <>
+      <h1>Shiny Measure</h1>
       <WeightForm
         recordWeightEntry={(newEntry: WeightEntry) => {
           recordWeightEntry(newEntry);
           setEntries(getWeightEntries());
         }}
       />
-      <table>
-        <thead>
-          <tr>
-            <th>Date time</th>
-            <th>Weight (kg)</th>
-            <th>Body fat (%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.length > 0 ? (
-            entries.map((entry) => (
-              <tr key={entry.dateTime.toMillis()}>
-                <td>{entry.dateTime.toFormat("d LLL")}</td>
-                <td>{entry.weight}</td>
-                <td>{entry.bodyFat}</td>
-              </tr>
-            ))
-          ) : (
+      <section>
+        <h2>Past Entries</h2>
+        <table>
+          <thead>
             <tr>
-              <td colSpan={3}>No data recorded yet!</td>
+              <th>Date time</th>
+              <th>Weight (kg)</th>
+              <th>Body fat (%)</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {entries.length > 0 ? (
+              entries.map((entry) => (
+                <tr key={entry.dateTime.toMillis()}>
+                  <td>{entry.dateTime.toFormat("d LLL")}</td>
+                  <td>{entry.weight}</td>
+                  <td>{entry.bodyFat}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3}>No data recorded yet!</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
     </>
   );
 };

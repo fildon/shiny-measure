@@ -96,30 +96,45 @@ export const WeightForm = ({
 
   return (
     <form onSubmit={onSubmit}>
-      {weightState.state === "invalid" && (
-        <span>{weightState.errorMessages}</span>
-      )}
-      <label htmlFor="weight">Weight (kg)</label>
-      <input
-        id="weight"
-        type="text"
-        spellCheck={false}
-        value={weightState.value}
-        onChange={onChangeWeight}
-        enterKeyHint="next"
-      ></input>
-      {bodyFatState.state === "invalid" && (
-        <span>{bodyFatState.errorMessages}</span>
-      )}
-      <label htmlFor="bodyFat">Body Fat (%)</label>
-      <input
-        id="bodyFat"
-        type="text"
-        spellCheck={false}
-        value={bodyFatState.value}
-        onChange={onChangeBodyFat}
-        enterKeyHint="done"
-      ></input>
+      <h2>Add a New Entry</h2>
+      <fieldset>
+        <label htmlFor="weight">Weight (kg)</label>
+        <input
+          id="weight"
+          type="text"
+          spellCheck={false}
+          value={weightState.value}
+          onChange={onChangeWeight}
+          enterKeyHint="next"
+        ></input>
+        {weightState.state === "invalid" &&
+          weightState.errorMessages.length > 0 && (
+            <ul>
+              {weightState.errorMessages.map((errorMessage) => (
+                <li key={errorMessage}>{errorMessage}</li>
+              ))}
+            </ul>
+          )}
+      </fieldset>
+      <fieldset>
+        <label htmlFor="bodyFat">Body Fat (%)</label>
+        <input
+          id="bodyFat"
+          type="text"
+          spellCheck={false}
+          value={bodyFatState.value}
+          onChange={onChangeBodyFat}
+          enterKeyHint="done"
+        ></input>
+        {bodyFatState.state === "invalid" &&
+          bodyFatState.errorMessages.length > 0 && (
+            <ul>
+              {bodyFatState.errorMessages.map((errorMessage) => (
+                <li key={errorMessage}>{errorMessage}</li>
+              ))}
+            </ul>
+          )}
+      </fieldset>
       <input type="submit"></input>
     </form>
   );
