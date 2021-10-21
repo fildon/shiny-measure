@@ -42,10 +42,13 @@ const useControlledInput = (validator: Validator) => {
       });
     }
   };
+  const clear = () =>
+    setState({ state: "invalid", value: "", errorMessages: [] });
 
   return {
     state,
     onChange,
+    clear,
   };
 };
 
@@ -54,25 +57,29 @@ export const WeightForm = ({
 }: {
   recordWeightEntry: (newWeightEntry: WeightEntry) => unknown;
 }) => {
-  const { state: weightState, onChange: onChangeWeight } = useControlledInput(
-    (value) => {
-      if (value.length === 0) return ["Value required"];
-      const numericValue = Number(value);
-      if (isNaN(numericValue)) return ["Must be a number"];
-      if (numericValue <= 0) return ["Must be greater than zero"];
-      return numericValue;
-    }
-  );
-  const { state: bodyFatState, onChange: onChangeBodyFat } = useControlledInput(
-    (value) => {
-      if (value.length === 0) return ["Value required"];
-      const numericValue = Number(value);
-      if (isNaN(numericValue)) return ["Must be a number"];
-      if (numericValue <= 0) return ["Must be greater than zero"];
-      if (numericValue > 100) return ["Must be less than 100"];
-      return numericValue;
-    }
-  );
+  const {
+    state: weightState,
+    onChange: onChangeWeight,
+    clear: clearWeightInput,
+  } = useControlledInput((value) => {
+    if (value.length === 0) return ["Value required"];
+    const numericValue = Number(value);
+    if (isNaN(numericValue)) return ["Must be a number"];
+    if (numericValue <= 0) return ["Must be greater than zero"];
+    return numericValue;
+  });
+  const {
+    state: bodyFatState,
+    onChange: onChangeBodyFat,
+    clear: clearBodyFatInput,
+  } = useControlledInput((value) => {
+    if (value.length === 0) return ["Value required"];
+    const numericValue = Number(value);
+    if (isNaN(numericValue)) return ["Must be a number"];
+    if (numericValue <= 0) return ["Must be greater than zero"];
+    if (numericValue > 100) return ["Must be less than 100"];
+    return numericValue;
+  });
 
   const onSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
@@ -82,6 +89,8 @@ export const WeightForm = ({
         weight: weightState.parsedValue,
         bodyFat: bodyFatState.parsedValue,
       });
+      clearBodyFatInput();
+      clearWeightInput();
     }
   };
 
