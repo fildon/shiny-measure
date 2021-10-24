@@ -27,8 +27,8 @@ describe("Storage", () => {
 
     storage.recordWeightEntry({
       dateTime: now,
-      weight: 1,
-      bodyFat: 2,
+      weightTotal: 1,
+      fatPercent: 2,
     });
 
     const newEntries = storage.getWeightEntries();
@@ -48,16 +48,16 @@ describe("Storage", () => {
     const yesterday = DateTime.now().minus({ days: 1 });
     const lastWeek = DateTime.now().minus({ days: 7 });
 
-    const todayEntry = { dateTime: today, weight: 1, bodyFat: 2 };
+    const todayEntry = { dateTime: today, weightTotal: 1, fatPercent: 2 };
     const yesterdayEntry = {
       dateTime: yesterday,
-      weight: 3,
-      bodyFat: 4,
+      weightTotal: 3,
+      fatPercent: 4,
     };
     const lastWeekEntry = {
       dateTime: lastWeek,
-      weight: 5,
-      bodyFat: 6,
+      weightTotal: 5,
+      fatPercent: 6,
     };
 
     // Add entries out of order
