@@ -86,8 +86,8 @@ export const WeightForm = ({
     if (weightState.state === "valid" && bodyFatState.state === "valid") {
       recordWeightEntry({
         dateTime: DateTime.now(),
-        weight: weightState.parsedValue,
-        bodyFat: bodyFatState.parsedValue,
+        weightTotal: weightState.parsedValue,
+        fatPercent: bodyFatState.parsedValue,
       });
       clearBodyFatInput();
       clearWeightInput();

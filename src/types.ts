@@ -5,6 +5,6 @@ type Percentage = number;
 
 export interface WeightEntry {
   dateTime: DateTime;
-  weight: Kilograms;
-  bodyFat: Percentage;
+  weightTotal: Kilograms;
+  fatPercent: Percentage;
 }
