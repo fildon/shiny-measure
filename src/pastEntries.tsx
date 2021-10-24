@@ -38,7 +38,7 @@ export const PastEntries = ({ entries }: { entries: WeightEntry[] }) => {
             ))
           ) : (
             <tr>
-              <td colSpan={3}>No data recorded yet!</td>
+              <td colSpan={5}>No data recorded yet!</td>
             </tr>
           )}
         </tbody>
