@@ -36,8 +36,8 @@ describe("Storage", () => {
     expect(newEntries).toHaveLength(1);
     expect(newEntries[0]).toEqual({
       dateTime: now,
-      weight: 1,
-      bodyFat: 2,
+      weightTotal: 1,
+      fatPercent: 2,
     });
   });
 
@@ -71,18 +71,18 @@ describe("Storage", () => {
     expect(entries).toHaveLength(3);
     expect(entries[0]).toEqual({
       dateTime: today,
-      weight: 1,
-      bodyFat: 2,
+      weightTotal: 1,
+      fatPercent: 2,
     });
     expect(entries[1]).toEqual({
       dateTime: yesterday,
-      weight: 3,
-      bodyFat: 4,
+      weightTotal: 3,
+      fatPercent: 4,
     });
     expect(entries[2]).toEqual({
       dateTime: lastWeek,
-      weight: 5,
-      bodyFat: 6,
+      weightTotal: 5,
+      fatPercent: 6,
     });
   });
 });
