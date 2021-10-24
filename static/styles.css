@@ -73,8 +73,33 @@ select {
   }
 }
 
+* {
+  max-width: 60ch;
+}
+html,
+body,
+header {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  line-height: 1.5rem;
+}
+
+h1 {
+  font-size: 3.375rem;
+  line-height: 3.375rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 2.25rem;
+  text-decoration: underline;
+}
+
 body {
-  margin: 1rem;
+  margin: 1rem auto;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 #root > * + * {
@@ -90,17 +115,29 @@ form > * + * {
   margin-top: 1rem;
 }
 
+fieldset {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 fieldset > * + * {
   margin-left: 1rem;
 }
 
-fieldset ul {
+input {
+  min-width: 50%;
+}
+input + ul {
   color: red;
 }
 
 section {
   border: 1px solid black;
   padding: 1rem;
+}
+section > * + * {
+  margin-top: 1rem;
 }
 
 th {
@@ -112,6 +149,14 @@ tr > * {
   text-align: center;
 }
 
-tr > * + * {
-  padding-left: 1rem;
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.stack > * {
+  margin: 0 auto 0;
+}
+.stack > * + * {
+  margin-top: 1.5rem;
 }
