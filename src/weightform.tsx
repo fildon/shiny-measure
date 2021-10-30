@@ -105,6 +105,7 @@ export const WeightForm = ({
           spellCheck={false}
           value={weightState.value}
           onChange={onChangeWeight}
+          autoComplete="off"
           enterKeyHint="next"
         ></input>
         {weightState.state === "invalid" &&
@@ -124,6 +125,7 @@ export const WeightForm = ({
           spellCheck={false}
           value={bodyFatState.value}
           onChange={onChangeBodyFat}
+          autoComplete="off"
           enterKeyHint="done"
         ></input>
         {bodyFatState.state === "invalid" &&
