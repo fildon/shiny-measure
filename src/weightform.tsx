@@ -1,5 +1,6 @@
 import * as React from "react";
 import { DateTime } from "luxon";
+import { useToast } from "@chakra-ui/toast";
 
 import type { WeightEntry } from "./types";
 
@@ -81,6 +82,8 @@ export const WeightForm = ({
     return numericValue;
   });
 
+  const toast = useToast();
+
   const onSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
     if (weightState.state === "valid" && bodyFatState.state === "valid") {
@@ -91,6 +94,11 @@ export const WeightForm = ({
       });
       clearBodyFatInput();
       clearWeightInput();
+      toast({
+        title: "Entry added",
+        status: "success",
+        isClosable: true,
+      });
     }
   };
 
