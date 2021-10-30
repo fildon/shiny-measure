@@ -46,8 +46,23 @@ export const buildStorageModule = ({
     setItem(WEIGHT_ENTRIES, JSON.stringify(newEntries));
   };
 
+  const deleteWeightEntry = (
+    dateTimeToDelete: WeightEntry["dateTime"]
+  ): void => {
+    const entries = getWeightEntries();
+
+    setItem(WEIGHT_ENTRIES, "");
+
+    entries
+      .filter(
+        ({ dateTime }) => dateTime.toMillis() !== dateTimeToDelete.toMillis()
+      )
+      .forEach(recordWeightEntry);
+  };
+
   return {
     getWeightEntries,
+    deleteWeightEntry,
     recordWeightEntry,
   };
 };

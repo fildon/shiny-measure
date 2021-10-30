@@ -11,7 +11,13 @@ const embellishEntry = (entry: WeightEntry) => ({
   ).toFixed(2),
 });
 
-export const PastEntries = ({ entries }: { entries: WeightEntry[] }) => {
+export const PastEntries = ({
+  entries,
+  deleteWeightEntry,
+}: {
+  entries: WeightEntry[];
+  deleteWeightEntry: (dateTime: WeightEntry["dateTime"]) => unknown;
+}) => {
   return (
     <section>
       <h2>Past Entries</h2>
@@ -23,6 +29,7 @@ export const PastEntries = ({ entries }: { entries: WeightEntry[] }) => {
             <th>Body fat (%)</th>
             <th>Lean (kg)</th>
             <th>Fat (kg)</th>
+            <th>Delete entry</th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +41,11 @@ export const PastEntries = ({ entries }: { entries: WeightEntry[] }) => {
                 <td>{entry.fatPercent}</td>
                 <td>{entry.leanTotal}</td>
                 <td>{entry.fatTotal}</td>
+                <td>
+                  <button onClick={() => deleteWeightEntry(entry.dateTime)}>
+                    X
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
