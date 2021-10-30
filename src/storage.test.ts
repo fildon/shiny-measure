@@ -41,6 +41,42 @@ describe("Storage", () => {
     });
   });
 
+  it("can delete an entry", () => {
+    const storage = buildStorageModule(buildMockStorageDep());
+
+    const today = DateTime.now();
+    const yesterday = DateTime.now().minus({ days: 1 });
+    const lastWeek = DateTime.now().minus({ days: 7 });
+
+    const todayEntry = { dateTime: today, weightTotal: 1, fatPercent: 2 };
+    const yesterdayEntry = {
+      dateTime: yesterday,
+      weightTotal: 3,
+      fatPercent: 4,
+    };
+    const lastWeekEntry = {
+      dateTime: lastWeek,
+      weightTotal: 5,
+      fatPercent: 6,
+    };
+
+    storage.recordWeightEntry(lastWeekEntry);
+    storage.recordWeightEntry(yesterdayEntry);
+    storage.recordWeightEntry(todayEntry);
+
+    expect(storage.getWeightEntries()).toHaveLength(3);
+
+    storage.deleteWeightEntry(yesterdayEntry.dateTime);
+
+    const entries = storage.getWeightEntries();
+    expect(entries).toHaveLength(2);
+    expect(
+      entries.filter(
+        ({ dateTime }) => dateTime.toMillis() === yesterday.toMillis()
+      )
+    ).toHaveLength(0);
+  });
+
   it("returns entries sorted by date", () => {
     const storage = buildStorageModule(buildMockStorageDep());
 
