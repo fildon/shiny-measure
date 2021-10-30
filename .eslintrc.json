@@ -1,6 +1,8 @@
 {
   "parser": "@typescript-eslint/parser",
-  "parserOptions": { "project": "./tsconfig.json"},
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "plugins": [
     "@typescript-eslint",
     "jest",
@@ -12,10 +14,22 @@
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:jest/recommended",
     "plugin:jest/style",
-    "plugin:jsx-a11y/recommended"
+    "plugin:jsx-a11y/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
-  "ignorePatterns": ["dist/", "node_modules/"],
+  "ignorePatterns": [
+    "dist/",
+    "node_modules/"
+  ],
   "env": {
     "jest/globals": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
