@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { useModal } from "./modal";
+
 import type { WeightEntry } from "./types";
 
 const embellishEntry = (entry: WeightEntry) => ({
@@ -18,6 +20,10 @@ export const PastEntries = ({
   entries: WeightEntry[];
   deleteWeightEntry: (dateTime: WeightEntry["dateTime"]) => unknown;
 }) => {
+  const [entryToDelete, setEntryToDelete] = React.useState<
+    WeightEntry["dateTime"] | undefined
+  >(undefined);
+  const { Modal } = useModal();
   return (
     <section>
       <h2>Past Entries</h2>
@@ -25,11 +31,11 @@ export const PastEntries = ({
         <thead>
           <tr>
             <th>Date time</th>
-            <th>Weight (kg)</th>
-            <th>Body fat (%)</th>
-            <th>Lean (kg)</th>
-            <th>Fat (kg)</th>
-            <th>Delete entry</th>
+            <th style={{ textAlign: "right" }}>Weight (kg)</th>
+            <th style={{ textAlign: "right" }}>Body fat (%)</th>
+            <th style={{ textAlign: "right" }}>Lean (kg)</th>
+            <th style={{ textAlign: "right" }}>Fat (kg)</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -37,12 +43,12 @@ export const PastEntries = ({
             entries.map(embellishEntry).map((entry) => (
               <tr key={entry.dateTime.toMillis()}>
                 <td>{entry.dateTime.toFormat("d LLL")}</td>
-                <td>{entry.weightTotal}</td>
-                <td>{entry.fatPercent}</td>
-                <td>{entry.leanTotal}</td>
-                <td>{entry.fatTotal}</td>
+                <td style={{ textAlign: "right" }}>{entry.weightTotal}</td>
+                <td style={{ textAlign: "right" }}>{entry.fatPercent}</td>
+                <td style={{ textAlign: "right" }}>{entry.leanTotal}</td>
+                <td style={{ textAlign: "right" }}>{entry.fatTotal}</td>
                 <td>
-                  <button onClick={() => deleteWeightEntry(entry.dateTime)}>
+                  <button onClick={() => setEntryToDelete(entry.dateTime)}>
                     X
                   </button>
                 </td>
@@ -50,11 +56,37 @@ export const PastEntries = ({
             ))
           ) : (
             <tr>
-              <td colSpan={5}>No data recorded yet!</td>
+              <td colSpan={6}>No data recorded yet!</td>
             </tr>
           )}
         </tbody>
       </table>
+      <Modal isOpen={!!entryToDelete}>
+        <p style={{ margin: "15px" }}>
+          Are you sure you want to delete this entry? This cannot be undone.
+        </p>
+        <div style={{ textAlign: "right", padding: "0 20px 20px" }}>
+          <button
+            style={{ backgroundColor: "lightgrey" }}
+            onClick={() => setEntryToDelete(undefined)}
+          >
+            Cancel
+          </button>
+          <button
+            style={{
+              marginLeft: "5px",
+              backgroundColor: "palevioletred",
+              fontWeight: "bold",
+            }}
+            onClick={() => {
+              if (entryToDelete) deleteWeightEntry(entryToDelete);
+              setEntryToDelete(undefined);
+            }}
+          >
+            Delete entry
+          </button>
+        </div>
+      </Modal>
     </section>
   );
 };

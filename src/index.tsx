@@ -1,6 +1,7 @@
 import * as React from "react";
 import { render } from "react-dom";
 
+import { ModalProvider } from "./modal";
 import { WeightForm } from "./weightform";
 import type { WeightEntry } from "./types";
 import { buildStorageModule } from "./storage";
@@ -27,7 +28,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <ModalProvider>
       <h1>Shiny Measure</h1>
       <WeightForm
         recordWeightEntry={(newEntry: WeightEntry) => {
@@ -39,7 +40,7 @@ const App = () => {
         entries={entries}
         deleteWeightEntry={deleteWeightEntryAndRefresh}
       />
-    </>
+    </ModalProvider>
   );
 };
 
