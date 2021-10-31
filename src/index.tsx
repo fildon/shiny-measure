@@ -1,6 +1,5 @@
 import * as React from "react";
 import { render } from "react-dom";
-import { ChakraProvider } from "@chakra-ui/react";
 
 import { WeightForm } from "./weightform";
 import type { WeightEntry } from "./types";
@@ -28,7 +27,7 @@ const App = () => {
   };
 
   return (
-    <ChakraProvider resetCSS={false}>
+    <>
       <h1>Shiny Measure</h1>
       <WeightForm
         recordWeightEntry={(newEntry: WeightEntry) => {
@@ -40,7 +39,7 @@ const App = () => {
         entries={entries}
         deleteWeightEntry={deleteWeightEntryAndRefresh}
       />
-    </ChakraProvider>
+    </>
   );
 };
 
