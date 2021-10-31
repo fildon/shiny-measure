@@ -73,6 +73,9 @@ select {
   }
 }
 
+* {
+  max-width: 60ch;
+}
 html,
 body,
 header {
