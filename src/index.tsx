@@ -3,6 +3,7 @@ import { render } from "react-dom";
 
 import { ModalProvider } from "./modal";
 import { WeightForm } from "./weightform";
+import { WeightChart } from "./weightChart";
 import type { WeightEntry } from "./types";
 import { buildStorageModule } from "./storage";
 import { PastEntries } from "./pastEntries";
@@ -40,6 +41,7 @@ const App = () => {
         entries={entries}
         deleteWeightEntry={deleteWeightEntryAndRefresh}
       />
+      <WeightChart entries={entries} />
     </ModalProvider>
   );
 };
