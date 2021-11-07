@@ -137,7 +137,7 @@ export const WeightForm = ({
             </ul>
           )}
       </fieldset>
-      <input type="submit">Record entry</input>
+      <input type="submit" value="Record entry" />
     </form>
   );
 };
