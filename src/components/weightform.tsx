@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DateTime } from "luxon";
 
-import type { WeightEntry } from "./types";
+import type { WeightEntry } from "../types";
 
 type ValidInput = {
   state: "valid";

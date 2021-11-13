@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { useModal } from "./modal";
 
-import type { WeightEntry } from "./types";
+import type { WeightEntry } from "../types";
 
 const embellishEntry = (entry: WeightEntry) => ({
   ...entry,
