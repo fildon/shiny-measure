@@ -1,12 +1,12 @@
 import * as React from "react";
 import { render } from "react-dom";
 
-import { ModalProvider } from "./modal";
-import { WeightForm } from "./weightform";
-import { WeightChart } from "./weightChart";
+import { ModalProvider } from "./components/modal";
+import { WeightForm } from "./components/weightform";
+import { WeightChart } from "./components/weightChart";
 import type { WeightEntry } from "./types";
 import { buildStorageModule } from "./storage";
-import { PastEntries } from "./pastEntries";
+import { PastEntries } from "./components/pastEntries";
 
 const App = () => {
   const { getWeightEntries, recordWeightEntry, deleteWeightEntry } =
