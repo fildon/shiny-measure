@@ -1,13 +1,5 @@
 import * as React from "react";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 import { DateTime } from "luxon";
 
 import { WeightEntry } from "../types";
@@ -89,11 +81,6 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
           />
         )}
         <Legend />
-        <Tooltip
-          labelFormatter={(millis: number) =>
-            DateTime.fromMillis(millis).toFormat("d LLL")
-          }
-        />
       </LineChart>
     </section>
   );
