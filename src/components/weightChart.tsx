@@ -82,6 +82,7 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
         )}
         <Legend />
       </LineChart>
+      <span>tap to cycle views</span>
     </section>
   );
 };
