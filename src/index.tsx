@@ -37,11 +37,11 @@ const App = () => {
           setEntries(getWeightEntries());
         }}
       />
+      <WeightChart entries={entries} />
       <PastEntries
         entries={entries}
         deleteWeightEntry={deleteWeightEntryAndRefresh}
       />
-      <WeightChart entries={entries} />
     </ModalProvider>
   );
 };

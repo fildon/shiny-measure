@@ -108,14 +108,13 @@ export const WeightForm = ({
           autoComplete="off"
           enterKeyHint="next"
         ></input>
-        {weightState.state === "invalid" &&
-          weightState.errorMessages.length > 0 && (
-            <ul>
-              {weightState.errorMessages.map((errorMessage) => (
-                <li key={errorMessage}>{errorMessage}</li>
-              ))}
-            </ul>
-          )}
+        <ul aria-live="polite">
+          {weightState.state === "invalid" &&
+            weightState.errorMessages.length > 0 &&
+            weightState.errorMessages.map((errorMessage) => (
+              <li key={errorMessage}>{errorMessage}</li>
+            ))}
+        </ul>
       </fieldset>
       <fieldset>
         <label htmlFor="bodyFat">Body Fat (%)</label>
@@ -128,14 +127,13 @@ export const WeightForm = ({
           autoComplete="off"
           enterKeyHint="done"
         ></input>
-        {bodyFatState.state === "invalid" &&
-          bodyFatState.errorMessages.length > 0 && (
-            <ul>
-              {bodyFatState.errorMessages.map((errorMessage) => (
-                <li key={errorMessage}>{errorMessage}</li>
-              ))}
-            </ul>
-          )}
+        <ul aria-live="polite">
+          {bodyFatState.state === "invalid" &&
+            bodyFatState.errorMessages.length > 0 &&
+            bodyFatState.errorMessages.map((errorMessage) => (
+              <li key={errorMessage}>{errorMessage}</li>
+            ))}
+        </ul>
       </fieldset>
       <input type="submit" value="Record entry" />
     </form>
