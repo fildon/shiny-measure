@@ -26,18 +26,24 @@ const useControlledInput = (validator: Validator) => {
     errorMessages: [],
   });
   const onChange = ({ target: { value } }: { target: { value: string } }) => {
-    const validationResult = validator(value);
+    setState({
+      ...state,
+      value,
+    });
+  };
+  const onBlur = () => {
+    const validationResult = validator(state.value);
 
     if (typeof validationResult === "number") {
       setState({
+        ...state,
         state: "valid",
-        value,
         parsedValue: validationResult,
       });
     } else {
       setState({
+        ...state,
         state: "invalid",
-        value,
         errorMessages: validationResult,
       });
     }
@@ -48,6 +54,7 @@ const useControlledInput = (validator: Validator) => {
   return {
     state,
     onChange,
+    onBlur,
     clear,
   };
 };
@@ -60,6 +67,7 @@ export const WeightForm = ({
   const {
     state: weightState,
     onChange: onChangeWeight,
+    onBlur: onBlurWeight,
     clear: clearWeightInput,
   } = useControlledInput((value) => {
     if (value.length === 0) return ["Value required"];
@@ -71,6 +79,7 @@ export const WeightForm = ({
   const {
     state: bodyFatState,
     onChange: onChangeBodyFat,
+    onBlur: onBlurBodyFat,
     clear: clearBodyFatInput,
   } = useControlledInput((value) => {
     if (value.length === 0) return ["Value required"];
@@ -105,10 +114,15 @@ export const WeightForm = ({
           spellCheck={false}
           value={weightState.value}
           onChange={onChangeWeight}
+          onBlur={onBlurWeight}
           autoComplete="off"
           enterKeyHint="next"
+          aria-invalid={weightState.state === "invalid"}
+          aria-describedby={
+            weightState.state === "invalid" ? "weight-errors" : undefined
+          }
         ></input>
-        <ul aria-live="polite">
+        <ul id="weight-errors" aria-live="assertive" aria-atomic="true">
           {weightState.state === "invalid" &&
             weightState.errorMessages.length > 0 &&
             weightState.errorMessages.map((errorMessage) => (
@@ -124,10 +138,15 @@ export const WeightForm = ({
           spellCheck={false}
           value={bodyFatState.value}
           onChange={onChangeBodyFat}
+          onBlur={onBlurBodyFat}
           autoComplete="off"
           enterKeyHint="done"
+          aria-invalid={bodyFatState.state === "invalid"}
+          aria-describedby={
+            bodyFatState.state === "invalid" ? "bodyfat-errors" : undefined
+          }
         ></input>
-        <ul aria-live="polite">
+        <ul id="bodyfat-errors" aria-live="assertive" aria-atomic="true">
           {bodyFatState.state === "invalid" &&
             bodyFatState.errorMessages.length > 0 &&
             bodyFatState.errorMessages.map((errorMessage) => (
