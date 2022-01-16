@@ -27,14 +27,15 @@ const useLineSelection = () => {
 };
 
 export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
+  const anyFatEntries = entries.some((entry) => entry.fatPercent !== undefined);
   const { showWeightTotal, showLean, showFat, onClick } = useLineSelection();
   if (entries.length < 2) return null;
   const chartData = entries
     .map(({ dateTime, weightTotal, fatPercent }) => ({
       dateTime: dateTime.toMillis(),
       weightTotal,
-      lean: weightTotal * ((100 - fatPercent) / 100),
-      fat: weightTotal * (fatPercent / 100),
+      lean: fatPercent ? weightTotal * ((100 - fatPercent) / 100) : undefined,
+      fat: fatPercent ? weightTotal * (fatPercent / 100) : undefined,
     }))
     .sort((a, b) => a.dateTime - b.dateTime);
   return (
@@ -44,7 +45,9 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
         height={250}
         margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
         data={chartData}
-        onClick={onClick}
+        onClick={() => {
+          anyFatEntries && onClick();
+        }}
       >
         <CartesianGrid />
         <XAxis
@@ -64,7 +67,7 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
             animationDuration={500}
           />
         )}
-        {showLean && (
+        {anyFatEntries && showLean && (
           <Line
             name="Lean weight"
             dataKey="lean"
@@ -72,7 +75,7 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
             animationDuration={500}
           />
         )}
-        {showFat && (
+        {anyFatEntries && showFat && (
           <Line
             name="Fat weight"
             dataKey="fat"

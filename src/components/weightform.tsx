@@ -3,10 +3,10 @@ import { DateTime } from "luxon";
 
 import type { WeightEntry } from "../types";
 
-type ValidInput = {
+type ValidInput<Value> = {
   state: "valid";
   value: string;
-  parsedValue: number;
+  parsedValue: Value;
 };
 
 type InvalidInput = {
@@ -15,12 +15,17 @@ type InvalidInput = {
   errorMessages: string[];
 };
 
-type ControlledInput = ValidInput | InvalidInput;
+type ControlledInput<Value> = ValidInput<Value> | InvalidInput;
 
-type Validator = (unparsedNumber: string) => number | string[];
-
-const useControlledInput = (validator: Validator) => {
-  const [state, setState] = React.useState<ControlledInput>({
+const weightInputValidator = (value: string) => {
+  if (value.length === 0) return ["Value required"];
+  const numericValue = Number(value);
+  if (isNaN(numericValue)) return ["Must be a number"];
+  if (numericValue <= 0) return ["Must be greater than zero"];
+  return numericValue;
+};
+const useWeightInput = () => {
+  const [state, setState] = React.useState<ControlledInput<number>>({
     state: "invalid",
     value: "",
     errorMessages: [],
@@ -32,7 +37,7 @@ const useControlledInput = (validator: Validator) => {
     });
   };
   const onBlur = () => {
-    const validationResult = validator(state.value);
+    const validationResult = weightInputValidator(state.value);
 
     if (typeof validationResult === "number") {
       setState({
@@ -59,6 +64,61 @@ const useControlledInput = (validator: Validator) => {
   };
 };
 
+const bodyFatValidator = (value: string) => {
+  const numericValue = Number(value);
+  if (isNaN(numericValue)) return ["Must be a number"];
+  if (numericValue <= 0) return ["Must be greater than zero"];
+  if (numericValue > 100) return ["Must be less than 100"];
+  return numericValue;
+};
+const useBodyFatInput = () => {
+  const [state, setState] = React.useState<ControlledInput<number | undefined>>(
+    {
+      state: "valid",
+      value: "",
+      parsedValue: undefined,
+    }
+  );
+  const onChange = ({ target: { value } }: { target: { value: string } }) => {
+    setState({
+      ...state,
+      value,
+    });
+  };
+  const onBlur = () => {
+    if (state.value === undefined || state.value === "") {
+      // Empty input is valid, since this input is optional
+      setState({ ...state, state: "valid", parsedValue: undefined });
+      return;
+    }
+
+    const validationResult = bodyFatValidator(state.value);
+
+    if (typeof validationResult === "number") {
+      setState({
+        ...state,
+        state: "valid",
+        parsedValue: validationResult,
+      });
+    } else {
+      setState({
+        ...state,
+        state: "invalid",
+        errorMessages: validationResult,
+      });
+    }
+  };
+  const clear = () =>
+    setState({ state: "valid", value: "", parsedValue: undefined });
+
+  return {
+    state,
+    onChange,
+    onBlur,
+    clear,
+  };
+};
+
 export const WeightForm = ({
   recordWeightEntry,
 }: {
@@ -69,26 +129,13 @@ export const WeightForm = ({
     onChange: onChangeWeight,
     onBlur: onBlurWeight,
     clear: clearWeightInput,
-  } = useControlledInput((value) => {
-    if (value.length === 0) return ["Value required"];
-    const numericValue = Number(value);
-    if (isNaN(numericValue)) return ["Must be a number"];
-    if (numericValue <= 0) return ["Must be greater than zero"];
-    return numericValue;
-  });
+  } = useWeightInput();
   const {
     state: bodyFatState,
     onChange: onChangeBodyFat,
     onBlur: onBlurBodyFat,
     clear: clearBodyFatInput,
-  } = useControlledInput((value) => {
-    if (value.length === 0) return ["Value required"];
-    const numericValue = Number(value);
-    if (isNaN(numericValue)) return ["Must be a number"];
-    if (numericValue <= 0) return ["Must be greater than zero"];
-    if (numericValue > 100) return ["Must be less than 100"];
-    return numericValue;
-  });
+  } = useBodyFatInput();
 
   const onSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
@@ -145,6 +192,7 @@ export const WeightForm = ({
           aria-describedby={
             bodyFatState.state === "invalid" ? "bodyfat-errors" : undefined
           }
+          placeholder="optional"
         ></input>
         <ul id="bodyfat-errors" aria-live="assertive" aria-atomic="true">
           {bodyFatState.state === "invalid" &&

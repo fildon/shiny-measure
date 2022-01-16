@@ -22,7 +22,8 @@
   ],
   "ignorePatterns": [
     "dist/",
-    "node_modules/"
+    "node_modules/",
+    "jest.config.ts"
   ],
   "env": {
     "jest/globals": true
