@@ -6,7 +6,7 @@ type SerializedWeightEntry = {
    * ISO formatted string
    */
   dateTime: string;
-  bodyFat: number;
+  bodyFat?: number;
   weight: number;
 };
 

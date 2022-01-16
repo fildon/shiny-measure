@@ -6,11 +6,16 @@ import type { WeightEntry } from "../types";
 
 const embellishEntry = (entry: WeightEntry) => ({
   ...entry,
-  fatTotal: (entry.weightTotal * (entry.fatPercent / 100)).toFixed(2),
-  leanTotal: (
-    entry.weightTotal -
-    entry.weightTotal * (entry.fatPercent / 100)
-  ).toFixed(2),
+  fatPercent: entry.fatPercent ?? "-",
+  fatTotal: entry.fatPercent
+    ? (entry.weightTotal * (entry.fatPercent / 100)).toFixed(2)
+    : "-",
+  leanTotal: entry.fatPercent
+    ? (
+        entry.weightTotal -
+        entry.weightTotal * (entry.fatPercent / 100)
+      ).toFixed(2)
+    : "-",
 });
 
 export const PastEntries = ({
@@ -23,6 +28,7 @@ export const PastEntries = ({
   const [entryToDelete, setEntryToDelete] = React.useState<
     WeightEntry["dateTime"] | undefined
   >(undefined);
+  const anyFatRecords = entries.some((entry) => entry.fatPercent !== undefined);
   const { Modal } = useModal();
   return (
     <section>
@@ -32,9 +38,11 @@ export const PastEntries = ({
           <tr>
             <th>Date time</th>
             <th style={{ textAlign: "right" }}>Weight (kg)</th>
-            <th style={{ textAlign: "right" }}>Body fat (%)</th>
-            <th style={{ textAlign: "right" }}>Lean (kg)</th>
-            <th style={{ textAlign: "right" }}>Fat (kg)</th>
+            {anyFatRecords && (
+              <th style={{ textAlign: "right" }}>Body fat (%)</th>
+            )}
+            {anyFatRecords && <th style={{ textAlign: "right" }}>Lean (kg)</th>}
+            {anyFatRecords && <th style={{ textAlign: "right" }}>Fat (kg)</th>}
             <th>Delete</th>
           </tr>
         </thead>
@@ -44,9 +52,15 @@ export const PastEntries = ({
               <tr key={entry.dateTime.toMillis()}>
                 <td>{entry.dateTime.toFormat("d LLL")}</td>
                 <td style={{ textAlign: "right" }}>{entry.weightTotal}</td>
-                <td style={{ textAlign: "right" }}>{entry.fatPercent}</td>
-                <td style={{ textAlign: "right" }}>{entry.leanTotal}</td>
-                <td style={{ textAlign: "right" }}>{entry.fatTotal}</td>
+                {anyFatRecords && (
+                  <td style={{ textAlign: "right" }}>{entry.fatPercent}</td>
+                )}
+                {anyFatRecords && (
+                  <td style={{ textAlign: "right" }}>{entry.leanTotal}</td>
+                )}
+                {anyFatRecords && (
+                  <td style={{ textAlign: "right" }}>{entry.fatTotal}</td>
+                )}
                 <td>
                   <button onClick={() => setEntryToDelete(entry.dateTime)}>
                     X
