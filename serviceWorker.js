@@ -15,7 +15,7 @@ self.addEventListener("install", (event) =>
   )
 );
 
-const requestThenCache = (request) =>
+const fetchThenCache = (request) =>
   fetch(request).then((responseFromNetwork) => {
     // response may be used only once
     // we need to save clone to put one copy in cache
@@ -32,7 +32,7 @@ const cacheFirst = async (request) => {
   if (responseFromCache) return responseFromCache;
 
   // Next try to get the resource from the network
-  return requestThenCache().catch(
+  return fetchThenCache(request).catch(
     () =>
       // when both the cache and the network are unavailable,
       // there is nothing we can do, but we must always
