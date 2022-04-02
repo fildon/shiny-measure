@@ -1,26 +1,3 @@
-// On install, cache core assets
-self.addEventListener("install", (event) => {
-  console.info("Installing service worker");
-  try {
-    // Cache core assets
-    event.waitUntil(
-      caches
-        .open("v1")
-        .then((cache) =>
-          cache.addAll([
-            "/shiny-measure/index.html",
-            "/shiny-measure/index.js",
-            "/shiny-measure/reset.css",
-            "/shiny-measure/styles.css",
-            "/shiny-measure/favicon.ico",
-          ])
-        )
-    );
-  } catch (error) {
-    console.error(`Error during installation: ${error}`);
-  }
-});
-
 const fetchThenCache = (request) =>
   fetch(request).then((responseFromNetwork) => {
     // response may be used only once
