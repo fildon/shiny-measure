@@ -1,25 +1,30 @@
 // On install, cache core assets
-self.addEventListener("install", function (event) {
+self.addEventListener("install", (event) =>
   // Cache core assets
   event.waitUntil(
     caches
       .open("v1")
       .then((cache) =>
-        cache.addAll(["/index.html", "/index.js", "/reset.css", "/styles.css"])
+        cache.addAll([
+          "/shiny-measure/index.html",
+          "/shiny-measure/index.js",
+          "/shiny-measure/reset.css",
+          "/shiny-measure/styles.css",
+        ])
       )
-  );
-});
+  )
+);
 
-const requestThenCache = async (request) => {
-  const responseFromNetwork = await fetch(request);
-  // response may be used only once
-  // we need to save clone to put one copy in cache
-  // and serve second one
-  caches
-    .open("v1")
-    .then((cache) => cache.put(request, responseFromNetwork.clone()));
-  return responseFromNetwork;
-};
+const requestThenCache = (request) =>
+  fetch(request).then((responseFromNetwork) => {
+    // response may be used only once
+    // we need to save clone to put one copy in cache
+    // and serve second one
+    caches
+      .open("v1")
+      .then((cache) => cache.put(request, responseFromNetwork.clone()));
+    return responseFromNetwork;
+  });
 
 const cacheFirst = async (request) => {
   // First try to get the resource from the cache
