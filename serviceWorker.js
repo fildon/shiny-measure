@@ -6,7 +6,7 @@ self.addEventListener("install", (event) =>
       .open("v1")
       .then((cache) =>
         cache.addAll([
-          "/shiny-measure",
+          "/shiny-measure/index.html",
           "/shiny-measure/index.js",
           "/shiny-measure/reset.css",
           "/shiny-measure/styles.css",
