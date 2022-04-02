@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "description": "A weight tracking webapp",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build:js": "npm run clean && esbuild src/index.tsx --bundle --minify --outfile=dist/index.js",
-    "build:js:dev": "npm run clean && esbuild src/index.tsx --bundle --sourcemap --outfile=dist/index.js",
-    "build:static": "cp -R static ./dist && mv dist/static/* ./dist && rm -d dist/static",
-    "build": "npm run build:js && npm run build:static",
-    "build:dev": "npm run build:js:dev && npm run build:static",
+    "clean": "shx rm -rf dist",
+    "build:js": "esbuild src/index.tsx src/serviceWorker.ts --bundle --minify --outdir=dist",
+    "build:static": "shx cp -R ./static/* ./dist",
+    "build": "npm run clean && npm run build:js && npm run build:static",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest",
     "serve": "serve dist"
@@ -47,6 +45,7 @@
     "recharts": "^2.1.6",
     "sass": "^1.43.2",
     "serve": "^12.0.1",
+    "shx": "^0.3.4",
     "ts-jest": "^27.0.7",
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"

@@ -18,7 +18,7 @@ All data is only held in localStorage.
 2. Build the app
 
    ```shell
-   npm run build:dev
+   npm run build
    ```
 
 3. Serve locally
