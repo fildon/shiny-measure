@@ -29,19 +29,24 @@ const fetchThenCache = (request) =>
 const cacheFirst = async (request) => {
   // First try to get the resource from the cache
   const responseFromCache = await caches.match(request);
-  if (responseFromCache) return responseFromCache;
+  if (responseFromCache) {
+    console.info(`Successful cache hit for: ${request}`);
+    return responseFromCache;
+  } else {
+    console.info(`No cache found for: ${request}`);
+  }
 
   // Next try to get the resource from the network
-  return fetchThenCache(request).catch(
-    () =>
-      // when both the cache and the network are unavailable,
-      // there is nothing we can do, but we must always
-      // return a Response object
-      new Response("Network error happened", {
-        status: 408,
-        headers: { "Content-Type": "text/plain" },
-      })
-  );
+  return fetchThenCache(request).catch((error) => {
+    console.error(error);
+    // when both the cache and the network are unavailable,
+    // there is nothing we can do, but we must always
+    // return a Response object
+    return new Response("Network error happened", {
+      status: 408,
+      headers: { "Content-Type": "text/plain" },
+    });
+  });
 };
 
 // Listen for request events
