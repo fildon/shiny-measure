@@ -1,36 +1,43 @@
 const fetchThenCache = async (request: RequestInfo) => {
-  const [responseFromNetwork, cache] = await Promise.all([
-    fetch(request),
-    caches.open("v1"),
-  ]);
-  // response may be used only once
-  // we need to save clone to put one copy in cache
-  // and serve second one
-  await cache.put(request, responseFromNetwork.clone());
+  // Start network request and cache opening in parallel.
+  const networkPromise = fetch(request);
+  const cachePromise = caches.open("v1");
+
+  // Have to wait until the network has responded
+  const responseFromNetwork = await networkPromise;
+
+  // But then we can immediately return the network response
+  // Without having to wait for the cache update to complete.
+  void cachePromise.then((caches) =>
+    // response may only be used once
+    // we need to save a clone to put one copy in cache
+    // and serve second one
+    caches.put(request, responseFromNetwork.clone())
+  );
+
   return responseFromNetwork;
 };
 
-const cacheFirst = async (request: RequestInfo) => {
-  // First try to get the resource from the cache
-  const responseFromCache = await caches.match(request);
-  if (responseFromCache) {
-    console.info(`Successful cache hit for: ${request.toString()}`);
-    return responseFromCache;
-  } else {
-    console.info(`No cache found for: ${request.toString()}`);
-  }
+const staleWhileRevalidate = (request: RequestInfo) => {
+  // Always try to hit both the cache and the network (in parallel).
+  const cachePromise = caches.match(request);
+  const networkPromise = fetchThenCache(request);
 
-  // Next try to get the resource from the network
-  return fetchThenCache(request).catch((error) => {
-    console.error(error);
-    // when both the cache and the network are unavailable,
-    // there is nothing we can do, but we must always
-    // return a Response object
-    return new Response("Network error happened", {
-      status: 408,
-      headers: { "Content-Type": "text/plain" },
+  return cachePromise
+    .then(
+      (responseFromCache) => responseFromCache ?? Promise.reject("Cache miss")
+    )
+    .catch(() => networkPromise)
+    .catch((error) => {
+      console.error(error);
+      // when both the cache and the network are unavailable,
+      // there is nothing we can do, but we must always
+      // return a Response object
+      return new Response("Both cache and network unavailable.", {
+        status: 408,
+        headers: { "Content-Type": "text/plain" },
+      });
     });
-  });
 };
 
 self.addEventListener("install", (event) => {
@@ -62,5 +69,5 @@ self.addEventListener("fetch", (event) => {
     request: RequestInfo;
     respondWith: (response: Response | Promise<Response>) => void;
   };
-  fetchEvent.respondWith(cacheFirst(fetchEvent.request));
+  fetchEvent.respondWith(staleWhileRevalidate(fetchEvent.request));
 });
