@@ -1,8 +1,26 @@
-import * as React from "react";
-
-import { useModal } from "./modal";
-
+import { useState } from "react";
 import type { WeightEntry } from "../types";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Modal,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 const embellishEntry = (entry: WeightEntry) => ({
   ...entry,
@@ -25,82 +43,89 @@ export const PastEntries = ({
   entries: WeightEntry[];
   deleteWeightEntry: (dateTime: WeightEntry["dateTime"]) => unknown;
 }) => {
-  const [entryToDelete, setEntryToDelete] = React.useState<
+  const [entryToDelete, setEntryToDelete] = useState<
     WeightEntry["dateTime"] | undefined
   >(undefined);
   const anyFatRecords = entries.some((entry) => entry.fatPercent !== undefined);
-  const { Modal } = useModal();
   return (
-    <section>
-      <h2>Past Entries</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date time</th>
-            <th style={{ textAlign: "right" }}>Weight (kg)</th>
-            {anyFatRecords && (
-              <th style={{ textAlign: "right" }}>Body fat (%)</th>
+    <Card sx={{ padding: "16px" }}>
+      <Typography variant="h2">Past Entries</Typography>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Date time</TableCell>
+              <TableCell align="right">Weight (kg)</TableCell>
+              {anyFatRecords && (
+                <TableCell align="right">Body fat (%)</TableCell>
+              )}
+              {anyFatRecords && <TableCell align="right">Lean (kg)</TableCell>}
+              {anyFatRecords && <TableCell align="right">Fat (kg)</TableCell>}
+              <TableCell>Delete</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {entries.length > 0 ? (
+              entries.map(embellishEntry).map((entry) => (
+                <TableRow key={entry.dateTime.toMillis()}>
+                  <TableCell>{entry.dateTime.toFormat("d LLL")}</TableCell>
+                  <TableCell align="right">{entry.weightTotal}</TableCell>
+                  {anyFatRecords && (
+                    <TableCell align="right">{entry.fatPercent}</TableCell>
+                  )}
+                  {anyFatRecords && (
+                    <TableCell align="right">{entry.leanTotal}</TableCell>
+                  )}
+                  {anyFatRecords && (
+                    <TableCell align="right">{entry.fatTotal}</TableCell>
+                  )}
+                  <TableCell>
+                    <IconButton
+                      aria-label="delete"
+                      color="error"
+                      size="large"
+                      onClick={() => setEntryToDelete(entry.dateTime)}
+                    >
+                      <DeleteForeverIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6}>No data recorded yet!</TableCell>
+              </TableRow>
             )}
-            {anyFatRecords && <th style={{ textAlign: "right" }}>Lean (kg)</th>}
-            {anyFatRecords && <th style={{ textAlign: "right" }}>Fat (kg)</th>}
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.length > 0 ? (
-            entries.map(embellishEntry).map((entry) => (
-              <tr key={entry.dateTime.toMillis()}>
-                <td>{entry.dateTime.toFormat("d LLL")}</td>
-                <td style={{ textAlign: "right" }}>{entry.weightTotal}</td>
-                {anyFatRecords && (
-                  <td style={{ textAlign: "right" }}>{entry.fatPercent}</td>
-                )}
-                {anyFatRecords && (
-                  <td style={{ textAlign: "right" }}>{entry.leanTotal}</td>
-                )}
-                {anyFatRecords && (
-                  <td style={{ textAlign: "right" }}>{entry.fatTotal}</td>
-                )}
-                <td>
-                  <button onClick={() => setEntryToDelete(entry.dateTime)}>
-                    X
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6}>No data recorded yet!</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <Modal isOpen={!!entryToDelete}>
-        <p style={{ margin: "15px" }}>
-          Are you sure you want to delete this entry? This cannot be undone.
-        </p>
-        <div style={{ textAlign: "right", padding: "0 20px 20px" }}>
-          <button
-            style={{ backgroundColor: "lightgrey" }}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog open={!!entryToDelete}>
+        <DialogTitle>Delete entry?</DialogTitle>
+        <DialogContent>
+          <Alert severity="warning">
+            Are you sure you want to delete this entry? This cannot be undone.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            color="info"
             onClick={() => setEntryToDelete(undefined)}
           >
             Cancel
-          </button>
-          <button
-            style={{
-              marginLeft: "5px",
-              backgroundColor: "palevioletred",
-              fontWeight: "bold",
-            }}
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
             onClick={() => {
               if (entryToDelete) deleteWeightEntry(entryToDelete);
               setEntryToDelete(undefined);
             }}
           >
-            Delete entry
-          </button>
-        </div>
-      </Modal>
-    </section>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Card>
   );
 };

@@ -13,7 +13,7 @@ type SerializedWeightEntry = {
 const serializeEntry = (entry: WeightEntry): SerializedWeightEntry => ({
   bodyFat: entry.fatPercent,
   weight: entry.weightTotal,
-  dateTime: entry.dateTime.toISO(),
+  dateTime: entry.dateTime.toISO()!,
 });
 
 const deserializeEntry = (entry: SerializedWeightEntry): WeightEntry => ({

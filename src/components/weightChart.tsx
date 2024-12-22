@@ -1,34 +1,9 @@
-import * as React from "react";
-import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
-import { DateTime } from "luxon";
-
+import { Card, Container } from "@mui/material";
 import { WeightEntry } from "../types";
-
-const lineSelections = [
-  [true, true, true],
-  [true, false, false],
-  [false, true, false],
-  [false, false, true],
-] as const;
-
-const useLineSelection = () => {
-  const [lineSelectionIndex, setLineSelectionIndex] = React.useState(0);
-
-  const [showWeightTotal, showLean, showFat] =
-    lineSelections[lineSelectionIndex];
-
-  return {
-    showWeightTotal,
-    showLean,
-    showFat,
-    onClick: () =>
-      setLineSelectionIndex((i) => (i + 1) % lineSelections.length),
-  };
-};
+import { LineChart } from "@mui/x-charts";
 
 export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
   const anyFatEntries = entries.some((entry) => entry.fatPercent !== undefined);
-  const { showWeightTotal, showLean, showFat, onClick } = useLineSelection();
   if (entries.length < 2) return null;
   const chartData = entries
     .map(({ dateTime, weightTotal, fatPercent }) => ({
@@ -39,53 +14,17 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
     }))
     .sort((a, b) => a.dateTime - b.dateTime);
   return (
-    <section>
+    <Card sx={{ padding: "16px" }}>
       <LineChart
         width={500}
         height={250}
         margin={{ top: 20, right: 20, bottom: 10, left: 10 }}
-        data={chartData}
-        onClick={() => {
-          anyFatEntries && onClick();
-        }}
-      >
-        <CartesianGrid />
-        <XAxis
-          dataKey="dateTime"
-          domain={["auto", "auto"]}
-          tickFormatter={(millis: number) => {
-            return DateTime.fromMillis(millis).toFormat("d LLL");
-          }}
-          type="number"
-        />
-        <YAxis domain={["auto", "auto"]} unit="kg" />
-        {showWeightTotal && (
-          <Line
-            name="Total weight"
-            dataKey="weightTotal"
-            stroke="#cc0000"
-            animationDuration={500}
-          />
-        )}
-        {anyFatEntries && showLean && (
-          <Line
-            name="Lean weight"
-            dataKey="lean"
-            stroke="#00cc00"
-            animationDuration={500}
-          />
-        )}
-        {anyFatEntries && showFat && (
-          <Line
-            name="Fat weight"
-            dataKey="fat"
-            stroke="#0000cc"
-            animationDuration={500}
-          />
-        )}
-        <Legend />
-      </LineChart>
-      <span>tap to cycle views</span>
-    </section>
+        series={["weightTotal", "lean", "fat"].map((dataKey) => ({
+          dataKey,
+          label: dataKey,
+        }))}
+        dataset={chartData}
+      ></LineChart>
+    </Card>
   );
 };

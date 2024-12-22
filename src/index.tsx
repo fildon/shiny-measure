@@ -1,27 +1,24 @@
-import * as React from "react";
-import { render } from "react-dom";
+import { useMemo, useState } from "react";
+import { createRoot } from "react-dom/client";
 
-import { ModalProvider } from "./components/modal";
 import { WeightForm } from "./components/weightform";
 import { WeightChart } from "./components/weightChart";
 import type { WeightEntry } from "./types";
 import { buildStorageModule } from "./storage";
 import { PastEntries } from "./components/pastEntries";
+import { Container, CssBaseline, Stack, Typography } from "@mui/material";
 
 const App = () => {
-  const { getWeightEntries, recordWeightEntry, deleteWeightEntry } =
-    React.useMemo(
-      () =>
-        buildStorageModule({
-          getItem: (key) => window.localStorage.getItem(key),
-          setItem: (key, value) => window.localStorage.setItem(key, value),
-        }),
-      []
-    );
-
-  const [entries, setEntries] = React.useState<WeightEntry[]>(
-    getWeightEntries()
+  const { getWeightEntries, recordWeightEntry, deleteWeightEntry } = useMemo(
+    () =>
+      buildStorageModule({
+        getItem: (key) => window.localStorage.getItem(key),
+        setItem: (key, value) => window.localStorage.setItem(key, value),
+      }),
+    []
   );
+
+  const [entries, setEntries] = useState<WeightEntry[]>(getWeightEntries());
 
   const deleteWeightEntryAndRefresh = (dateTime: WeightEntry["dateTime"]) => {
     deleteWeightEntry(dateTime);
@@ -29,21 +26,26 @@ const App = () => {
   };
 
   return (
-    <ModalProvider>
-      <h1>Shiny Measure</h1>
-      <WeightForm
-        recordWeightEntry={(newEntry: WeightEntry) => {
-          recordWeightEntry(newEntry);
-          setEntries(getWeightEntries());
-        }}
-      />
-      <WeightChart entries={entries} />
-      <PastEntries
-        entries={entries}
-        deleteWeightEntry={deleteWeightEntryAndRefresh}
-      />
-    </ModalProvider>
+    <>
+      <CssBaseline />
+      <Container>
+        <Stack spacing={2}>
+          <Typography variant="h1">Shiny Measure</Typography>
+          <WeightForm
+            recordWeightEntry={(newEntry: WeightEntry) => {
+              recordWeightEntry(newEntry);
+              setEntries(getWeightEntries());
+            }}
+          />
+          <WeightChart entries={entries} />
+          <PastEntries
+            entries={entries}
+            deleteWeightEntry={deleteWeightEntryAndRefresh}
+          />
+        </Stack>
+      </Container>
+    </>
   );
 };
 
-render(<App />, document.getElementById("root"));
+createRoot(document.getElementById("root")!).render(<App />);
