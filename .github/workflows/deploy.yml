@@ -4,7 +4,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: "16.x"
+  NODE_VERSION: "20.x"
 
 jobs:
   deploy:
@@ -17,15 +17,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}
-
-      - name: 📦 Cache Node modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-
-            ${{ runner.OS }}-
 
       - name: 📥 Install deps
         run: npm ci
