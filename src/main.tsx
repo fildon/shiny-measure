@@ -41,7 +41,8 @@ const App = () => {
           }}
         />
       </Card>
-      {entries.length > 0 && (
+      {/* Only display the chart if there are at least 2 data points */}
+      {entries.length > 1 && (
         <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
           <WeightChart entries={entries} />
         </Card>
