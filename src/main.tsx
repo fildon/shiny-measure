@@ -29,11 +29,11 @@ const App = () => {
   };
 
   return (
-    <main className="flex flex-col items-center justify-between p-24">
+    <main className="flex flex-col w-full items-center justify-between p-2">
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Shiny Measure
       </h1>
-      <Card className="p-4 my-2 flex w-full max-w-5xl min-w-xl flex-col items-center justify-between lg:items-center">
+      <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
         <WeightForm
           recordWeightEntry={(newEntry: WeightEntry) => {
             recordWeightEntry(newEntry);
@@ -41,10 +41,10 @@ const App = () => {
           }}
         />
       </Card>
-      <Card className="p-4 my-2 flex w-full max-w-5xl min-w-xl flex-col items-center justify-between lg:items-center">
+      <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
         <WeightChart entries={entries} />
       </Card>
-      <Card className="p-4 my-2 flex w-full max-w-5xl min-w-xl flex-col items-center justify-between lg:items-center">
+      <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
         <PastEntries
           entries={entries}
           deleteWeightEntry={deleteWeightEntryAndRefresh}
