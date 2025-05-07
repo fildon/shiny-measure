@@ -39,7 +39,7 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
     }))
     .sort((a, b) => a.dateTime - b.dateTime);
   return (
-    <section>
+    <>
       <LineChart
         width={500}
         height={250}
@@ -85,7 +85,6 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
         )}
         <Legend />
       </LineChart>
-      <span>tap to cycle views</span>
-    </section>
+    </>
   );
 };

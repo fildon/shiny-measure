@@ -1,8 +1,28 @@
 import * as React from "react";
 
-import { useModal } from "./modal";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 import type { WeightEntry } from "../types";
+import { Button } from "./ui/button";
+import { H2 } from "./ui/heading";
 
 const embellishEntry = (entry: WeightEntry) => ({
   ...entry,
@@ -25,82 +45,85 @@ export const PastEntries = ({
   entries: WeightEntry[];
   deleteWeightEntry: (dateTime: WeightEntry["dateTime"]) => unknown;
 }) => {
-  const [entryToDelete, setEntryToDelete] = React.useState<
-    WeightEntry["dateTime"] | undefined
-  >(undefined);
   const anyFatRecords = entries.some((entry) => entry.fatPercent !== undefined);
-  const { Modal } = useModal();
   return (
-    <section>
-      <h2>Past Entries</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date time</th>
-            <th style={{ textAlign: "right" }}>Weight (kg)</th>
+    <>
+      <H2>Past Entries</H2>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date time</TableHead>
+            <TableHead style={{ textAlign: "right" }}>Weight (kg)</TableHead>
             {anyFatRecords && (
-              <th style={{ textAlign: "right" }}>Body fat (%)</th>
+              <TableHead style={{ textAlign: "right" }}>Body fat (%)</TableHead>
             )}
-            {anyFatRecords && <th style={{ textAlign: "right" }}>Lean (kg)</th>}
-            {anyFatRecords && <th style={{ textAlign: "right" }}>Fat (kg)</th>}
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
+            {anyFatRecords && (
+              <TableHead style={{ textAlign: "right" }}>Lean (kg)</TableHead>
+            )}
+            {anyFatRecords && (
+              <TableHead style={{ textAlign: "right" }}>Fat (kg)</TableHead>
+            )}
+            <TableHead>Delete</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {entries.length > 0 ? (
             entries.map(embellishEntry).map((entry) => (
-              <tr key={entry.dateTime.toMillis()}>
-                <td>{entry.dateTime.toFormat("d LLL")}</td>
-                <td style={{ textAlign: "right" }}>{entry.weightTotal}</td>
+              <TableRow key={entry.dateTime.toMillis()}>
+                <TableCell>{entry.dateTime.toFormat("d LLL")}</TableCell>
+                <TableCell style={{ textAlign: "right" }}>
+                  {entry.weightTotal}
+                </TableCell>
                 {anyFatRecords && (
-                  <td style={{ textAlign: "right" }}>{entry.fatPercent}</td>
+                  <TableCell style={{ textAlign: "right" }}>
+                    {entry.fatPercent}
+                  </TableCell>
                 )}
                 {anyFatRecords && (
-                  <td style={{ textAlign: "right" }}>{entry.leanTotal}</td>
+                  <TableCell style={{ textAlign: "right" }}>
+                    {entry.leanTotal}
+                  </TableCell>
                 )}
                 {anyFatRecords && (
-                  <td style={{ textAlign: "right" }}>{entry.fatTotal}</td>
+                  <TableCell style={{ textAlign: "right" }}>
+                    {entry.fatTotal}
+                  </TableCell>
                 )}
-                <td>
-                  <button onClick={() => setEntryToDelete(entry.dateTime)}>
-                    X
-                  </button>
-                </td>
-              </tr>
+                <TableCell>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline">X</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Edit profile</DialogTitle>
+                      </DialogHeader>
+                      <p>
+                        Are you sure you want to delete this entry? This cannot
+                        be undone.
+                      </p>
+                      <DialogFooter>
+                        <Button
+                          type="submit"
+                          onClick={() => {
+                            deleteWeightEntry(entry.dateTime);
+                          }}
+                        >
+                          Delete Entry
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </TableCell>
+              </TableRow>
             ))
           ) : (
-            <tr>
-              <td colSpan={6}>No data recorded yet!</td>
-            </tr>
+            <TableRow>
+              <TableCell colSpan={6}>No data recorded yet!</TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
-      <Modal isOpen={!!entryToDelete}>
-        <p style={{ margin: "15px" }}>
-          Are you sure you want to delete this entry? This cannot be undone.
-        </p>
-        <div style={{ textAlign: "right", padding: "0 20px 20px" }}>
-          <button
-            style={{ backgroundColor: "lightgrey" }}
-            onClick={() => setEntryToDelete(undefined)}
-          >
-            Cancel
-          </button>
-          <button
-            style={{
-              marginLeft: "5px",
-              backgroundColor: "palevioletred",
-              fontWeight: "bold",
-            }}
-            onClick={() => {
-              if (entryToDelete) deleteWeightEntry(entryToDelete);
-              setEntryToDelete(undefined);
-            }}
-          >
-            Delete entry
-          </button>
-        </div>
-      </Modal>
-    </section>
+        </TableBody>
+      </Table>
+    </>
   );
 };
