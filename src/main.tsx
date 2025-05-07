@@ -41,9 +41,11 @@ const App = () => {
           }}
         />
       </Card>
-      <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
-        <WeightChart entries={entries} />
-      </Card>
+      {entries.length > 0 && (
+        <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
+          <WeightChart entries={entries} />
+        </Card>
+      )}
       <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
         <PastEntries
           entries={entries}
