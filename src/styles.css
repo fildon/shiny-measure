@@ -2,6 +2,21 @@
 /* == Composition     == */
 /* ===================== */
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  line-height: 1.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f7f7f7;
+}
+
+body {
+  min-height: 100vh;
+}
+
 main {
   display: flex;
   flex-direction: column;
@@ -9,6 +24,10 @@ main {
   justify-content: center;
   padding: 1rem;
   gap: 1rem;
+}
+
+main>*+* {
+  margin-top: 2rem;
 }
 
 section>*+* {
@@ -19,12 +38,56 @@ form>*+* {
   margin-top: 1rem;
 }
 
+fieldset {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
 fieldset>*+* {
   margin-left: 1rem;
 }
 
+fieldset>input {
+  min-width: 60%;
+}
+
+form>input {
+  width: 100%;
+  padding: 10px;
+}
+
+input+ul {
+  color: red;
+  font-weight: bold;
+  min-width: 100%;
+}
+
+h1 {
+  font-size: 3.375rem;
+  line-height: 3.375rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 2.25rem;
+  text-decoration: underline;
+}
+
+th {
+  padding: 5px;
+}
+
 /* ===================== */
 /* == Utility         == */
+/* ===================== */
+
+/* (Reserved for single-purpose utility classes) */
+
+/* ===================== */
+/* == Block           == */
 /* ===================== */
 
 .weight-form {
@@ -65,6 +128,14 @@ fieldset>*+* {
   width: 100%;
 }
 
+.weightchart-button-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
 .entries-table {
   width: 100%;
   border-collapse: collapse;
@@ -82,81 +153,8 @@ fieldset>*+* {
 }
 
 .entries-table td {
-  text-align: center;
+  text-align: right;
 }
-
-/* ===================== */
-/* == Block           == */
-/* ===================== */
-
-
-html,
-
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  max-width: none;
-  line-height: 1.5rem;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f7f7f7;
-}
-
-body {
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.375rem;
-  line-height: 3.375rem;
-  text-align: center;
-}
-
-h2 {
-  font-size: 2.25rem;
-  line-height: 2.25rem;
-  text-decoration: underline;
-}
-
-main>*+* {
-  margin-top: 2rem;
-}
-
-form {
-  border: 1px solid black;
-  padding: 1rem;
-}
-
-fieldset {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-fieldset>input {
-  min-width: 60%;
-}
-
-input+ul {
-  color: red;
-  font-weight: bold;
-  min-width: 100%;
-}
-
-form>input {
-  width: 100%;
-  padding: 10px;
-}
-
-th {
-  padding: 5px;
-}
-
-/* ===================== */
-/* == Exception       == */
-/* ===================== */
 
 .dialog-backdrop {
   position: fixed;
@@ -180,3 +178,9 @@ th {
   border: 1px solid black;
   background-color: #fff;
 }
+
+/* ===================== */
+/* == Exception       == */
+/* ===================== */
+
+/* (Reserved for state-based variations like .is-active, .has-error) */
