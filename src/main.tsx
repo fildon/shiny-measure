@@ -6,7 +6,7 @@ import { WeightChart } from "./components/weightChart";
 import type { WeightEntry } from "./types";
 import { buildStorageModule } from "./storage";
 import { PastEntries } from "./components/pastEntries";
-import { Card } from "./components/ui/card";
+
 
 const App = () => {
   const { getWeightEntries, recordWeightEntry, deleteWeightEntry } =
@@ -29,30 +29,30 @@ const App = () => {
   };
 
   return (
-    <main className="flex flex-col w-full items-center justify-between p-2">
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+    <main>
+      <h1>
         Shiny Measure
       </h1>
-      <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
+      <section className="card-section">
         <WeightForm
           recordWeightEntry={(newEntry: WeightEntry) => {
             recordWeightEntry(newEntry);
             setEntries(getWeightEntries());
           }}
         />
-      </Card>
+      </section>
       {/* Only display the chart if there are at least 2 data points */}
       {entries.length > 1 && (
-        <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
+        <section className="card-section">
           <WeightChart entries={entries} />
-        </Card>
+        </section>
       )}
-      <Card className="p-4 my-2 flex w-full container flex-col items-center justify-between">
+      <section className="card-section">
         <PastEntries
           entries={entries}
           deleteWeightEntry={deleteWeightEntryAndRefresh}
         />
-      </Card>
+      </section>
     </main>
   );
 };

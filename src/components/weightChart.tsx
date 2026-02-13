@@ -3,7 +3,6 @@ import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 import { DateTime } from "luxon";
 
 import { WeightEntry } from "../types";
-import { ChartContainer } from "./ui/chart";
 
 const lineSelections = [
   [true, true, true],
@@ -40,20 +39,10 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
     }))
     .sort((a, b) => a.dateTime - b.dateTime);
   return (
-    <ChartContainer
-      config={{
-        desktop: {
-          label: "Desktop",
-          color: "#2563eb",
-        },
-        mobile: {
-          label: "Mobile",
-          color: "#60a5fa",
-        },
-      }}
-      className="min-h-[200px] w-full"
-    >
+    <div className="chart-container">
       <LineChart
+        width={600}
+        height={300}
         data={chartData}
         onClick={() => {
           anyFatEntries && onClick();
@@ -95,6 +84,6 @@ export const WeightChart = ({ entries }: { entries: WeightEntry[] }) => {
         )}
         <Legend />
       </LineChart>
-    </ChartContainer>
+    </div>
   );
 };

@@ -6,17 +6,6 @@ import { useForm } from "react-hook-form";
 import type { WeightEntry } from "../types";
 
 import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { H2 } from "./ui/heading";
 
 const formSchema = z.object({
   weight: z
@@ -42,7 +31,7 @@ const formSchema = z.object({
     ),
 });
 
-const Foo = () => {};
+const Foo = () => { };
 
 export const WeightForm = ({
   recordWeightEntry,
@@ -67,37 +56,32 @@ export const WeightForm = ({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <H2>Add a New Entry</H2>
-        <FormField
-          control={form.control}
-          name="weight"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Weight (kg)</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
-        <FormField
-          control={form.control}
-          name="bodyFat"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Body Fat (%)</FormLabel>
-              <FormControl>
-                <Input placeholder="optional" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        ></FormField>
-        <Button type="submit">Record entry</Button>
-      </form>
-    </Form>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="weight-form">
+      <h2>Add a New Entry</h2>
+      <div className="weight-form-group">
+        <label htmlFor="weight">Weight (kg)</label>
+        <input
+          id="weight"
+          type="text"
+          {...form.register('weight')}
+        />
+        {form.formState.errors.weight && (
+          <span className="weight-form-error">{form.formState.errors.weight.message as string}</span>
+        )}
+      </div>
+      <div className="weight-form-group">
+        <label htmlFor="bodyFat">Body Fat (%)</label>
+        <input
+          id="bodyFat"
+          type="text"
+          placeholder="optional"
+          {...form.register('bodyFat')}
+        />
+        {form.formState.errors.bodyFat && (
+          <span className="weight-form-error">{form.formState.errors.bodyFat.message as string}</span>
+        )}
+      </div>
+      <button type="submit">Record entry</button>
+    </form>
   );
 };
