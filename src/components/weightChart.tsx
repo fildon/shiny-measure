@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { DateTime } from "luxon";
 import { WeightEntry } from "../types";
 
@@ -88,50 +88,50 @@ export function WeightChart({ entries }: { entries: WeightEntry[] }) {
           ))}
         </div>
       )}
-      <LineChart
-        width={600}
-        height={300}
-        data={chartData}
-        onClick={() => {
-          anyFatEntries && onClick();
-        }}
-      >
-        <CartesianGrid />
-        <XAxis
-          dataKey="dateTime"
-          domain={["auto", "auto"]}
-          tickFormatter={(millis: number) => {
-            return DateTime.fromMillis(millis).toFormat("d LLL");
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart
+          data={chartData}
+          onClick={() => {
+            anyFatEntries && onClick();
           }}
-          type="number"
-        />
-        <YAxis domain={["auto", "auto"]} unit="kg" />
-        {showWeightTotal && (
-          <Line
-            name="Total weight"
-            dataKey="weightTotal"
-            stroke="#cc0000"
-            animationDuration={500}
+        >
+          <CartesianGrid />
+          <XAxis
+            dataKey="dateTime"
+            domain={["auto", "auto"]}
+            tickFormatter={(millis: number) => {
+              return DateTime.fromMillis(millis).toFormat("d LLL");
+            }}
+            type="number"
           />
-        )}
-        {anyFatEntries && showLean && (
-          <Line
-            name="Lean weight"
-            dataKey="lean"
-            stroke="#00cc00"
-            animationDuration={500}
-          />
-        )}
-        {anyFatEntries && showFat && (
-          <Line
-            name="Fat weight"
-            dataKey="fat"
-            stroke="#0000cc"
-            animationDuration={500}
-          />
-        )}
-        <Legend />
-      </LineChart>
+          <YAxis domain={["auto", "auto"]} unit="kg" />
+          {showWeightTotal && (
+            <Line
+              name="Total weight"
+              dataKey="weightTotal"
+              stroke="#cc0000"
+              animationDuration={500}
+            />
+          )}
+          {anyFatEntries && showLean && (
+            <Line
+              name="Lean weight"
+              dataKey="lean"
+              stroke="#00cc00"
+              animationDuration={500}
+            />
+          )}
+          {anyFatEntries && showFat && (
+            <Line
+              name="Fat weight"
+              dataKey="fat"
+              stroke="#0000cc"
+              animationDuration={500}
+            />
+          )}
+          <Legend />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
