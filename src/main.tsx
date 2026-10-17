@@ -1,12 +1,15 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
+import { DateTime } from "luxon";
 
 import { WeightForm } from "./components/weightform";
 import { WeightChart } from "./components/weightChart";
+import { Summary } from "./components/summary";
+import { Toast, type ToastMessage } from "./components/toast";
 import type { WeightEntry } from "./types";
 import { buildStorageModule } from "./storage";
 import { PastEntries } from "./components/pastEntries";
-
+import { formatDay } from "./format";
 
 const App = () => {
   const { getWeightEntries, recordWeightEntry, deleteWeightEntry } =
@@ -19,40 +22,70 @@ const App = () => {
       []
     );
 
-  const [entries, setEntries] = React.useState<WeightEntry[]>(
-    getWeightEntries()
-  );
+  // Storage returns newest first; the UI works oldest first
+  const readEntries = () => [...getWeightEntries()].reverse();
+  const [entries, setEntries] = React.useState<WeightEntry[]>(readEntries);
+  const [highlighted, setHighlighted] = React.useState<number>();
+  const [toast, setToast] = React.useState<ToastMessage>();
+  const dismissToast = React.useCallback(() => setToast(undefined), []);
 
-  const deleteWeightEntryAndRefresh = (dateTime: WeightEntry["dateTime"]) => {
-    deleteWeightEntry(dateTime);
-    setEntries(getWeightEntries());
+  const addEntry = (entry: WeightEntry) => {
+    recordWeightEntry(entry);
+    setEntries(readEntries());
+    setHighlighted(entry.dateTime.toMillis());
+  };
+
+  const recordAndConfirm = (entry: WeightEntry) => {
+    addEntry(entry);
+    setToast({ id: Date.now(), text: `Saved ${entry.weightTotal.toFixed(1)} kg` });
+  };
+
+  const deleteWithUndo = (entry: WeightEntry) => {
+    deleteWeightEntry(entry.dateTime);
+    setEntries(readEntries());
+    setToast({
+      id: Date.now(),
+      text: `Deleted ${formatDay(entry.dateTime)}`,
+      undo: () => {
+        addEntry(entry);
+        setToast(undefined);
+      },
+    });
   };
 
   return (
-    <main>
-      <h1>
-        Shiny Measure
-      </h1>
-      <section className="card-section">
-        <WeightForm
-          recordWeightEntry={(newEntry: WeightEntry) => {
-            recordWeightEntry(newEntry);
-            setEntries(getWeightEntries());
-          }}
-        />
-      </section>
-      {/* Only display the chart if there are at least 2 data points */}
-      {entries.length > 1 && (
-        <section className="card-section">
+    <main className="app">
+      <header className="topbar">
+        <h1>Shiny Measure</h1>
+        <span>{DateTime.now().toFormat("ccc d LLL")}</span>
+      </header>
+      <Summary entries={entries} />
+      <WeightForm
+        latestEntry={entries[entries.length - 1]}
+        recordWeightEntry={recordAndConfirm}
+      />
+      <section className="panel" aria-labelledby="trend-heading">
+        <div className="panel-head">
+          <h2 id="trend-heading">Trend</h2>
+          <span className="meta">kg · 7-day average</span>
+        </div>
+        {/* A trend needs at least 2 data points */}
+        {entries.length > 1 ? (
           <WeightChart entries={entries} />
-        </section>
-      )}
-      <section className="card-section">
-        <PastEntries
-          entries={entries}
-          deleteWeightEntry={deleteWeightEntryAndRefresh}
-        />
+        ) : (
+          <p className="chart-empty">
+            {entries.length === 1
+              ? "One entry so far. Add another to see your trend."
+              : "Your trend appears here once you have two entries."}
+          </p>
+        )}
       </section>
+      <PastEntries
+        entries={entries}
+        highlighted={highlighted}
+        deleteWeightEntry={deleteWithUndo}
+      />
+      <Toast toast={toast} onDismiss={dismissToast} />
     </main>
   );
 };

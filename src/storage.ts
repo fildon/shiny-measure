@@ -10,11 +10,18 @@ type SerializedWeightEntry = {
   weight: number;
 };
 
-const serializeEntry = (entry: WeightEntry): SerializedWeightEntry => ({
-  bodyFat: entry.fatPercent,
-  weight: entry.weightTotal,
-  dateTime: entry.dateTime.toISO(),
-});
+const serializeEntry = (entry: WeightEntry): SerializedWeightEntry => {
+  const dateTime = entry.dateTime.toISO();
+  // Only possible for an invalid DateTime, which getWeightEntries filters out
+  if (dateTime === null) {
+    throw new Error(`Cannot store invalid date: ${entry.dateTime.invalidReason}`);
+  }
+  return {
+    bodyFat: entry.fatPercent,
+    weight: entry.weightTotal,
+    dateTime,
+  };
+};
 
 const deserializeEntry = (entry: SerializedWeightEntry): WeightEntry => ({
   fatPercent: entry.bodyFat,
@@ -36,6 +43,8 @@ export const buildStorageModule = ({
 
     return parsed
       .map(deserializeEntry)
+      // Skip entries whose stored date can't be parsed
+      .filter(({ dateTime }) => dateTime.isValid)
       .sort((a, b) => b.dateTime.toMillis() - a.dateTime.toMillis());
   };
 

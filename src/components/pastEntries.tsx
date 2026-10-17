@@ -1,73 +1,152 @@
 import * as React from "react";
+import { Trash2 } from "lucide-react";
 
 import type { WeightEntry } from "../types";
+import { fatMass, leanMass } from "../trend";
+import { changeClass, formatChange, formatDay } from "../format";
 
-const embellishEntry = (entry: WeightEntry) => ({
-  ...entry,
-  fatPercent: entry.fatPercent ?? "-",
-  fatTotal: entry.fatPercent
-    ? (entry.weightTotal * (entry.fatPercent / 100)).toFixed(2)
-    : "-",
-  leanTotal: entry.fatPercent
-    ? (
-      entry.weightTotal -
-      entry.weightTotal * (entry.fatPercent / 100)
-    ).toFixed(2)
-    : "-",
-});
+const MONTHS_PER_PAGE = 3;
 
+interface Month {
+  key: string;
+  label: string;
+  average: number;
+  /** Newest first, each with the entry recorded before it */
+  rows: { entry: WeightEntry; previous?: WeightEntry }[];
+}
+
+/**
+ * @param entries sorted oldest first
+ * @returns months newest first
+ */
+const groupByMonth = (entries: WeightEntry[]): Month[] => {
+  const months = new Map<string, Month>();
+  entries.forEach((entry, index) => {
+    const key = entry.dateTime.toFormat("yyyy-MM");
+    const month = months.get(key) ?? {
+      key,
+      label: entry.dateTime.toFormat("LLLL yyyy"),
+      average: 0,
+      rows: [],
+    };
+    month.rows.unshift({ entry, previous: entries[index - 1] });
+    months.set(key, month);
+  });
+  return [...months.values()].reverse().map((month) => ({
+    ...month,
+    average:
+      month.rows.reduce((sum, { entry }) => sum + entry.weightTotal, 0) /
+      month.rows.length,
+  }));
+};
+
+/**
+ * @param entries sorted oldest first
+ */
 export const PastEntries = ({
   entries,
+  highlighted,
   deleteWeightEntry,
 }: {
   entries: WeightEntry[];
-  deleteWeightEntry: (dateTime: WeightEntry["dateTime"]) => unknown;
+  /** Millis of an entry to briefly highlight, e.g. one just added */
+  highlighted?: number;
+  deleteWeightEntry: (entry: WeightEntry) => unknown;
 }) => {
-  const anyFatRecords = entries.some((entry) => entry.fatPercent !== undefined);
+  const [monthsShown, setMonthsShown] = React.useState(MONTHS_PER_PAGE);
+  const months = groupByMonth(entries);
+
   return (
-    <>
-      <h2>Past Entries</h2>
-      <table className="entries-table">
-        <thead>
-          <tr>
-            <th>Date time</th>
-            <th>Weight (kg)</th>
-            {anyFatRecords && <th>Body fat (%)</th>}
-            {anyFatRecords && <th>Lean (kg)</th>}
-            {anyFatRecords && <th>Fat (kg)</th>}
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.length > 0 ? (
-            entries.map(embellishEntry).map((entry) => (
-              <tr key={entry.dateTime.toMillis()}>
-                <td>{entry.dateTime.toFormat("d LLL")}</td>
-                <td>{entry.weightTotal}</td>
-                {anyFatRecords && <td>{entry.fatPercent}</td>}
-                {anyFatRecords && <td>{entry.leanTotal}</td>}
-                {anyFatRecords && <td>{entry.fatTotal}</td>}
-                <td>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm("Are you sure you want to delete this entry? This cannot be undone.")) {
-                        deleteWeightEntry(entry.dateTime);
-                      }
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6}>No data recorded yet!</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </>
+    <section className="panel" aria-labelledby="history-heading">
+      <div className="panel-head">
+        <h2 id="history-heading">History</h2>
+        {entries.length > 0 && (
+          <span className="meta">
+            {entries.length} {entries.length === 1 ? "entry" : "entries"}
+          </span>
+        )}
+      </div>
+      {entries.length === 0 ? (
+        <p className="empty-note">Your weigh-ins will be listed here.</p>
+      ) : (
+        <div>
+          {months.slice(0, monthsShown).map((month) => (
+            <section className="month" key={month.key}>
+              <h3>
+                {month.label}
+                <span>AVG {month.average.toFixed(1)} KG</span>
+              </h3>
+              <ul>
+                {month.rows.map(({ entry, previous }) => (
+                  <HistoryRow
+                    key={entry.dateTime.toMillis()}
+                    entry={entry}
+                    previous={previous}
+                    highlighted={entry.dateTime.toMillis() === highlighted}
+                    onDelete={() => deleteWeightEntry(entry)}
+                  />
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
+      {months.length > monthsShown && (
+        <button
+          type="button"
+          className="ghost-button"
+          onClick={() => setMonthsShown((shown) => shown + MONTHS_PER_PAGE)}
+        >
+          Show older entries
+        </button>
+      )}
+    </section>
+  );
+};
+
+const HistoryRow = ({
+  entry,
+  previous,
+  highlighted,
+  onDelete,
+}: {
+  entry: WeightEntry;
+  previous?: WeightEntry;
+  highlighted: boolean;
+  onDelete: () => void;
+}) => {
+  const lean = leanMass(entry);
+  const fat = fatMass(entry);
+  const change = previous && entry.weightTotal - previous.weightTotal;
+
+  return (
+    <li className={`history-row${highlighted ? " highlighted" : ""}`}>
+      <span className="history-date">{formatDay(entry.dateTime)}</span>
+      {entry.fatPercent !== undefined && lean !== undefined && fat !== undefined && (
+        <span className="history-detail">
+          {entry.fatPercent.toFixed(1)}% fat · {lean.toFixed(1)} lean ·{" "}
+          {fat.toFixed(1)} fat
+        </span>
+      )}
+      <span className="history-weight">
+        {entry.weightTotal.toFixed(1)}
+        <small>KG</small>
+      </span>
+      {change === undefined ? (
+        <span className="history-change flat">First</span>
+      ) : (
+        <span className={`history-change ${changeClass(change)}`}>
+          {formatChange(change)}
+        </span>
+      )}
+      <button
+        type="button"
+        className="icon-button"
+        aria-label={`Delete entry from ${formatDay(entry.dateTime)}`}
+        onClick={onDelete}
+      >
+        <Trash2 size={16} aria-hidden="true" />
+      </button>
+    </li>
   );
 };

@@ -2,40 +2,43 @@ import * as React from "react";
 import { DateTime } from "luxon";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import type { WeightEntry } from "../types";
+import { formatDay } from "../format";
 
-import { z } from "zod";
+/** Accepts "78.4" or "78,4" */
+const parseDecimal = (value: string) => Number(value.trim().replace(",", "."));
 
 const formSchema = z.object({
   weight: z
     .string()
-    .min(1, "Value required")
+    .min(1, "Enter your weight in kg.")
     .refine(
       (value) => {
-        const numericValue = Number(value);
+        const numericValue = parseDecimal(value);
         return !isNaN(numericValue) && numericValue > 0;
       },
-      { message: "Must be greater than zero" }
+      { message: "Use a number like 78.4." }
     ),
   bodyFat: z
     .string()
     .optional()
     .refine(
       (value) => {
-        if (value === undefined || value === "") return true;
-        const numericValue = Number(value);
+        if (value === undefined || value.trim() === "") return true;
+        const numericValue = parseDecimal(value);
         return !isNaN(numericValue) && numericValue >= 0 && numericValue <= 100;
       },
-      { message: "Must be a number between 0 and 100" }
+      { message: "Use a percentage from 0 to 100." }
     ),
 });
 
-const Foo = () => { };
-
 export const WeightForm = ({
+  latestEntry,
   recordWeightEntry,
 }: {
+  latestEntry: WeightEntry | undefined;
   recordWeightEntry: (newWeightEntry: WeightEntry) => unknown;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,43 +48,70 @@ export const WeightForm = ({
       bodyFat: "",
     },
   });
+  const { errors } = form.formState;
 
   const onSubmit = ({ weight, bodyFat }: z.infer<typeof formSchema>) => {
     recordWeightEntry({
       dateTime: DateTime.now(),
-      weightTotal: Number(weight),
-      fatPercent: bodyFat ? Number(bodyFat) : undefined,
+      weightTotal: parseDecimal(weight),
+      fatPercent: bodyFat?.trim() ? parseDecimal(bodyFat) : undefined,
     });
     form.reset();
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="weight-form">
-      <h2>Add a New Entry</h2>
-      <div className="weight-form-group">
-        <label htmlFor="weight">Weight (kg)</label>
-        <input
-          id="weight"
-          type="text"
-          {...form.register('weight')}
-        />
-        {form.formState.errors.weight && (
-          <span className="weight-form-error">{form.formState.errors.weight.message as string}</span>
+    <section className="panel" aria-labelledby="entry-heading">
+      <div className="panel-head">
+        <h2 id="entry-heading">New entry</h2>
+        {latestEntry && (
+          <span className="meta">Last: {formatDay(latestEntry.dateTime)}</span>
         )}
       </div>
-      <div className="weight-form-group">
-        <label htmlFor="bodyFat">Body Fat (%)</label>
-        <input
-          id="bodyFat"
-          type="text"
-          placeholder="optional"
-          {...form.register('bodyFat')}
-        />
-        {form.formState.errors.bodyFat && (
-          <span className="weight-form-error">{form.formState.errors.bodyFat.message as string}</span>
-        )}
-      </div>
-      <button type="submit">Record entry</button>
-    </form>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="entry-form"
+        noValidate
+      >
+        <div className={`field${errors.weight ? " invalid" : ""}`}>
+          <label htmlFor="weight">Weight</label>
+          <div className="input-wrap">
+            <input
+              id="weight"
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder={latestEntry?.weightTotal.toFixed(1) ?? "80.0"}
+              aria-invalid={!!errors.weight}
+              {...form.register("weight")}
+            />
+            <span className="suffix">KG</span>
+          </div>
+          {errors.weight && (
+            <span className="field-error">{errors.weight.message}</span>
+          )}
+        </div>
+        <div className={`field${errors.bodyFat ? " invalid" : ""}`}>
+          <label htmlFor="bodyFat">Body fat · optional</label>
+          <div className="input-wrap">
+            <input
+              id="bodyFat"
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              placeholder={latestEntry?.fatPercent?.toFixed(1) ?? "22.0"}
+              aria-invalid={!!errors.bodyFat}
+              {...form.register("bodyFat")}
+            />
+            <span className="suffix">%</span>
+          </div>
+          {errors.bodyFat && (
+            <span className="field-error">{errors.bodyFat.message}</span>
+          )}
+        </div>
+        <button type="submit" className="primary-button">
+          Record
+        </button>
+      </form>
+    </section>
   );
 };
