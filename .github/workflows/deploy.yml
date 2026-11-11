@@ -13,16 +13,20 @@ jobs:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v2
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: 🤖 Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
         with:
+          cache: pnpm
           node-version: ${{ env.NODE_VERSION }}
 
       - name: 📥 Install deps
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: 🚧 npm build
-        run: npm run build
+      - name: 🚧 pnpm build
+        run: pnpm run build
 
       - name: 🚀 Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@4.1.3

@@ -21,13 +21,13 @@ All data is only held in your browser's localStorage. Nothing is sent anywhere.
 1. Install dependencies
 
    ```shell
-   npm install
+   pnpm install
    ```
 
 2. Start the dev server
 
    ```shell
-   npm run dev
+   pnpm run dev
    ```
 
    The app runs at [localhost:5173/shiny-measure/](http://localhost:5173/shiny-measure/).
@@ -37,14 +37,14 @@ All data is only held in your browser's localStorage. Nothing is sent anywhere.
    Vite doesn't type check while building, so run this separately:
 
    ```shell
-   npm run typecheck
+   pnpm run typecheck
    ```
 
 4. Build and preview the production bundle
 
    ```shell
-   npm run build
-   npm run preview
+   pnpm run build
+   pnpm run preview
    ```
 
    The preview runs at [localhost:4173/shiny-measure/](http://localhost:4173/shiny-measure/).
